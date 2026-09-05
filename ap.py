@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import speech_recognition as sr
 
-# --- 1. Data Layer (Tomar asol scheme gulo) ---
 schemes = [
     {"name": "PM SVANidhi", "benefit": "Collateral-free loan up to Rs 10,000", "eligibility": "Street vendor with vending certificate", "for": "street vendor", "score": 50},
     {"name": "Stand-Up India", "benefit": "Loan Rs 10 Lakh to 1 Crore", "eligibility": "SC/ST or Woman entrepreneur", "for": "SC/ST", "score": 50},
@@ -12,7 +11,6 @@ schemes = [
 ]
 df = pd.DataFrame(schemes)
 
-# --- Session for voice ---
 if 'voice_text' not in st.session_state:
     st.session_state.voice_text = ""
 
@@ -20,26 +18,25 @@ st.set_page_config(page_title="SASVA: AI Scheme Finder")
 st.title("SASVA: AI Scheme Finder")
 st.write("For Marginalized Entrepreneurs")
 
-# --- 2. Presentation Layer (Sidebar) ---
 st.sidebar.title("Your Profile")
 
-# Voice Assistant Merged Here
-if st.sidebar.button("🎤 Speak Business Type"):
+# Voice Assistant - Cloud e cholar moto
+st.sidebar.write("🎤 Voice Assistant")
+audio_file = st.sidebar.audio_input("Bolo... SC/ST / farmer / street vendor")
+
+if audio_file:
     r = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.sidebar.info("Bolo... SC/ST / farmer / street vendor")
-        r.adjust_for_ambient_noise(source, duration=1)
-        audio = r.listen(source, timeout=5, phrase_time_limit=5)
+    with sr.AudioFile(audio_file) as source:
+        audio = r.record(source)
     try:
         st.session_state.voice_text = r.recognize_google(audio)
         st.sidebar.success(f"You said: {st.session_state.voice_text}")
     except:
         st.sidebar.error("Bujhte parini, abar bolo")
 
-# Voice theke auto-select logic
 voice_lower = st.session_state.voice_text.lower()
 options = ["SC/ST", "street vendor", "small business", "farmer", "tailor"]
-index = 0 # Default SC/ST (tomar photo onujayi)
+index = 0
 
 if "street" in voice_lower or "vendor" in voice_lower:
     index = 1
@@ -56,12 +53,9 @@ business = st.sidebar.selectbox("Business Type", options, index=index)
 state = st.sidebar.selectbox("State", ["West Bengal", "All", "Bihar", "UP"])
 income = st.sidebar.number_input("Monthly Income (Rs)", value=1000)
 
-# --- 3. Logic Layer ---
 if st.button("Find Best Schemes - Voice Search"):
-    # Filter
     filtered = df[df["for"].str.contains(business, case=False)]
     if filtered.empty:
-        # SC/ST hole 2to dekhabe
         filtered = df
 
     st.success(f"Found {len(filtered)} best schemes for you!")
