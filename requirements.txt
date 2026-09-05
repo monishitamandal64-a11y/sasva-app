@@ -1,2 +1,4 @@
 streamlit
-pandas
+SpeechRecognition
+pyaudio
+pydub
