@@ -90,7 +90,7 @@ if audio_file:
         st.sidebar.error("Abar bolo")
 
 if 'business_value'not in st.session_state:
-    st.sessioj_state.business_value="SC/ST"
+    st.session_state.business_value="SC/ST"
 voice_lower = st.session_state.voice_text.lower()
 options = ["SC/ST", "street vendor", "small business", "farmer", "tailor"]
 new_business=st.session_state.business_value
