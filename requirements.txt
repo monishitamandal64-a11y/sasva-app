@@ -1,4 +1,4 @@
 streamlit
 pandas
 SpeechRecognition
-fpdf
+fpdf2
