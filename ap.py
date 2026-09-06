@@ -20,7 +20,7 @@ translations = {
         "apply": "Apply Now",
         "download": "Download My Plan as PDF",
         "voice_title": "Voice Assistant (Bangla/English)",
-        "voice_label": "Bolo... farmer / street vendor"
+        "voice_label": "say... farmer / street vendor"
     },
     "বাংলা": {
         "title": "SASVA: AI প্রকল্প সন্ধানকারী",
@@ -37,7 +37,7 @@ translations = {
         "apply": "আবেদন করুন",
         "download": "PDF ডাউনলোড করুন",
         "voice_title": "ভয়েস সহকারী",
-        "voice_label": "বলুন... আমি কৃষক"
+        "voice_label": "বলুন..."
     },
     "हिंदी": {
         "title": "SASVA: AI योजना खोजक",
