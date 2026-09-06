@@ -29,33 +29,30 @@ schemes = [
 
 df = pd.DataFrame(schemes)
 
-# --- PDF FUNCTION FIX ---
+# --- PDF FIX ---
 def create_pdf(dataframe):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", "B", 16)
     pdf.cell(200, 10, txt="SASVA - Your Best Schemes", ln=True, align='C')
     pdf.ln(10)
-    pdf.set_font("Arial", "", 11)
     for i, row in dataframe.iterrows():
         name = str(row['name']).encode('latin-1', 'replace').decode('latin-1')
         benefit = str(row['benefit']).encode('latin-1', 'replace').decode('latin-1')
         eligibility = str(row['eligibility']).encode('latin-1', 'replace').decode('latin-1')
         pdf.set_font("Arial", "B", 12)
-        pdf.cell(0, 10, txt=f"{i+1}. {name} - Score {row['score']}/100", ln=True)
+        pdf.cell(0, 10, txt=f"{i+1}. {name} - {row['score']}/100", ln=True)
         pdf.set_font("Arial", "", 11)
         pdf.multi_cell(0, 8, txt=f"Benefit: {benefit}\nEligibility: {eligibility}\nLink: {row['link']}\n")
         pdf.ln(3)
     out = pdf.output(dest='S')
-    if isinstance(out, str):
-        return out.encode('latin-1', 'replace')
-    else:
-        return bytes(out)
+    return out.encode('latin-1', 'replace') if isinstance(out, str) else bytes(out)
 
+# --- SESSION ---
 if 'voice_text' not in st.session_state:
     st.session_state.voice_text = ""
-if 'business_index' not in st.session_state:
-    st.session_state.business_index = 0
+if 'business_value' not in st.session_state:
+    st.session_state.business_value = "SC/ST"
 if 'filtered_df' not in st.session_state:
     st.session_state.filtered_df = pd.DataFrame()
 
@@ -75,6 +72,7 @@ st.markdown(f'<div class="marquee"><span>✨ {t["title"]} ✨ {t["title"]} ✨ {
 st.markdown(f"<h4 style='text-align: center; color: grey;'>{t['subtitle']}</h4>", unsafe_allow_html=True)
 st.write("---")
 
+# --- SIDEBAR VOICE ---
 st.sidebar.title(t["profile"])
 audio_file = st.sidebar.audio_input(t["voice_label"])
 if audio_file:
@@ -89,39 +87,30 @@ if audio_file:
     except:
         st.sidebar.error("Abar bolo")
 
-if 'business_value'not in st.session_state:
-    st.session_state.business_value="SC/ST"
-voice_lower = st.session_state.voice_text.lower()
+# --- AUTO BUSINESS CHANGE - 100% WORKING ---
 options = ["SC/ST", "street vendor", "small business", "farmer", "tailor"]
-new_business=st.session_state.business_value
-if any(x in voice_lower for x in ["street", "vendor", "হকার"]): 
-    new_business="street vendor"
-elif any(x in voice_lower for x in ["small", "business", "ব্যবসা"]): 
-     new_business="small business"
-elif any(x in voice_lower for x in ["farm", "kisan", "কৃষক", "ফার্মার"]): 
-     new_business="farmer"
-elif any(x in voice_lower for x in ["tail", "দর্জি"]): 
-     new_business="tailor"
-elif any(x in voice_lower for x in ["sc", "st"]): 
-     new_business="SC/ST"
-if st.session_state.voice_text!=""and new_business!= st.session_state.business_value:
+voice_lower = st.session_state.voice_text.lower()
+new_business = st.session_state.business_value
+
+if any(x in voice_lower for x in ["street", "vendor", "হকার"]): new_business = "street vendor"
+elif any(x in voice_lower for x in ["small", "business", "ব্যবসা", "shop"]): new_business = "small business"
+elif any(x in voice_lower for x in ["farm", "kisan", "কৃষক", "krishi"]): new_business = "farmer"
+elif any(x in voice_lower for x in ["tail", "দর্জি", "vishwakarma"]): new_business = "tailor"
+elif any(x in voice_lower for x in ["sc", "st"]): new_business = "SC/ST"
+
+if st.session_state.voice_text!= "" and new_business!= st.session_state.business_value:
     st.session_state.business_value = new_business
-    st.toast(f"Voice detected: {new_business} ✅")
+    st.toast(f"Voice detected -> {new_business} ✅")
     st.rerun()
 
-
-business = st.sidebar.selectbox(t["business"], options, index=st.session_state.business_index)
+business = st.sidebar.selectbox(t["business"], options, index=options.index(st.session_state.business_value))
 state = st.sidebar.selectbox(t["state"], ["West Bengal", "All", "Bihar", "UP"])
 income = st.sidebar.number_input(t["income"], value=1000)
 
 if st.button(t["find_btn"]):
     filtered = df[df["for"].str.contains(business, case=False)]
-    if filtered.empty:
+    if filtered.empty or len(filtered) < 3:
         filtered = df.sort_values(by="score", ascending=False).head(3)
-    # Atleast 3 guarantee
-    if len(filtered) < 3:
-        filtered = df.sort_values(by="score", ascending=False).head(3)
-
     filtered = filtered.sort_values(by="score", ascending=False)
     st.session_state.filtered_df = filtered
     st.success(f"{t['found']} {len(filtered)} {t['for_you']}")
@@ -132,13 +121,7 @@ if st.button(t["find_btn"]):
             st.write(f"**{t['eligibility']}:** {row['eligibility']}")
             st.link_button(t["apply"], row['link'])
 
-# --- PDF DOWNLOAD BUTTON ---
 if not st.session_state.filtered_df.empty:
     st.write("---")
     pdf_bytes = create_pdf(st.session_state.filtered_df)
-    st.download_button(
-        label=t["download"],
-        data=pdf_bytes,
-        file_name="SASVA_Schemes.pdf",
-        mime="application/pdf"
-    )
+    st.download_button(label=t["download"], data=pdf_bytes, file_name="SASVA_Schemes.pdf", mime="application/pdf")
