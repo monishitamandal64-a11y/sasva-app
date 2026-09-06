@@ -8,6 +8,7 @@ translations = {
     "বাংলা": {"title": "SASVA-তে স্বাগতম", "subtitle": "প্রান্তিক উদ্যোক্তাদের জন্য", "profile": "আপনার প্রোফাইল", "business": "ব্যবসার ধরন", "state": "রাজ্য", "income": "মাসিক আয়", "find_btn": "প্রকল্প খুঁজুন", "found": "পাওয়া গেছে", "for_you": "টি প্রকল্প!", "benefit": "সুবিধা", "eligibility": "যোগ্যতা", "apply": "আবেদন করুন", "download": "PDF ডাউনলোড", "voice_title": "ভয়েস সহকারী", "voice_label": "বলুন... কৃষক"},
     "हिंदी": {"title": "SASVA में आपका स्वागत है", "subtitle": "वंचित उद्यमियों के लिए", "profile": "प्रोफाइल", "business": "व्यवसाय", "state": "राज्य", "income": "मासिक आय", "find_btn": "योजना खोजें", "found": "मिला", "for_you": "योजनाएं!", "benefit": "लाभ", "eligibility": "पात्रता", "apply": "आवेदन करें", "download": "PDF डाउनलोड", "voice_title": "वॉयस असिस्टेंट", "voice_label": "बोलें... किसान"}
 }
+
 schemes = [
     {"name": "PM SVANidhi", "benefit": "Loan up to Rs 50,000 without guarantee", "eligibility": "Street vendor / Hawker", "for": "street vendor", "score": 95, "link": "https://pmsvanidhi.mohua.gov.in"},
     {"name": "PM Vishwakarma", "benefit": "Free toolkit + Rs 3 Lakh loan @5% interest", "eligibility": "Tailor, Barber, Carpenter, Goldsmith (18 trades)", "for": "tailor", "score": 96, "link": "https://pmvishwakarma.gov.in"},
@@ -28,16 +29,41 @@ schemes = [
 
 df = pd.DataFrame(schemes)
 
+# --- PDF FUNCTION FIX ---
+def create_pdf(dataframe):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(200, 10, txt="SASVA - Your Best Schemes", ln=True, align='C')
+    pdf.ln(10)
+    pdf.set_font("Arial", "", 11)
+    for i, row in dataframe.iterrows():
+        name = str(row['name']).encode('latin-1', 'replace').decode('latin-1')
+        benefit = str(row['benefit']).encode('latin-1', 'replace').decode('latin-1')
+        eligibility = str(row['eligibility']).encode('latin-1', 'replace').decode('latin-1')
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(0, 10, txt=f"{i+1}. {name} - Score {row['score']}/100", ln=True)
+        pdf.set_font("Arial", "", 11)
+        pdf.multi_cell(0, 8, txt=f"Benefit: {benefit}\nEligibility: {eligibility}\nLink: {row['link']}\n")
+        pdf.ln(3)
+    out = pdf.output(dest='S')
+    if isinstance(out, str):
+        return out.encode('latin-1', 'replace')
+    else:
+        return bytes(out)
+
 if 'voice_text' not in st.session_state:
     st.session_state.voice_text = ""
 if 'business_index' not in st.session_state:
     st.session_state.business_index = 0
+if 'filtered_df' not in st.session_state:
+    st.session_state.filtered_df = pd.DataFrame()
 
 st.set_page_config(page_title="SASVA")
 lang = st.sidebar.selectbox("Language", ["English", "বাংলা", "हिंदी"])
 t = translations[lang]
 
-# --- EKHANEI MOVING WELCOME ---
+# --- MOVING WELCOME ---
 st.markdown("""
 <style>
 .marquee { width: 100%; overflow: hidden; white-space: nowrap; }
@@ -78,10 +104,29 @@ income = st.sidebar.number_input(t["income"], value=1000)
 
 if st.button(t["find_btn"]):
     filtered = df[df["for"].str.contains(business, case=False)]
-    if filtered.empty: filtered=df
+    if filtered.empty:
+        filtered = df.sort_values(by="score", ascending=False).head(3)
+    # Atleast 3 guarantee
+    if len(filtered) < 3:
+        filtered = df.sort_values(by="score", ascending=False).head(3)
+
+    filtered = filtered.sort_values(by="score", ascending=False)
+    st.session_state.filtered_df = filtered
     st.success(f"{t['found']} {len(filtered)} {t['for_you']}")
     for _, row in filtered.iterrows():
         with st.container(border=True):
             st.subheader(f"{row['name']} - {row['score']}/100")
             st.write(f"**{t['benefit']}:** {row['benefit']}")
-            st.button(t["apply"], key=row['name'])
+            st.write(f"**{t['eligibility']}:** {row['eligibility']}")
+            st.link_button(t["apply"], row['link'])
+
+# --- PDF DOWNLOAD BUTTON ---
+if not st.session_state.filtered_df.empty:
+    st.write("---")
+    pdf_bytes = create_pdf(st.session_state.filtered_df)
+    st.download_button(
+        label=t["download"],
+        data=pdf_bytes,
+        file_name="SASVA_Schemes.pdf",
+        mime="application/pdf"
+    )
