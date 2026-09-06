@@ -89,14 +89,26 @@ if audio_file:
     except:
         st.sidebar.error("Abar bolo")
 
+if 'business_value'not in st.session_state:
+    st.sessioj_state.business_value="SC/ST"
 voice_lower = st.session_state.voice_text.lower()
 options = ["SC/ST", "street vendor", "small business", "farmer", "tailor"]
-idx = st.session_state.business_index
-if any(x in voice_lower for x in ["street", "vendor", "হকার"]): idx=1
-elif any(x in voice_lower for x in ["small", "business", "ব্যবসা"]): idx=2
-elif any(x in voice_lower for x in ["farm", "kisan", "কৃষক", "ফার্মার"]): idx=3
-elif any(x in voice_lower for x in ["tail", "দর্জি"]): idx=4
-if st.session_state.voice_text!="": st.session_state.business_index=idx
+new_business=st.session_state.business_value
+if any(x in voice_lower for x in ["street", "vendor", "হকার"]): 
+    new_business="street vendor"
+elif any(x in voice_lower for x in ["small", "business", "ব্যবসা"]): 
+     new_business="small business"
+elif any(x in voice_lower for x in ["farm", "kisan", "কৃষক", "ফার্মার"]): 
+     new_business="farmer"
+elif any(x in voice_lower for x in ["tail", "দর্জি"]): 
+     new_business="tailor"
+elif any(x in voice_lower for x in ["sc", "st"]): 
+     new_business="SC/ST"
+if st.session_state.voice_text!=""and new_business!= st.session_state.business_value:
+    st.session_state.business_value = new_business
+    st.toast(f"Voice detected: {new_business} ✅")
+    st.rerun()
+
 
 business = st.sidebar.selectbox(t["business"], options, index=st.session_state.business_index)
 state = st.sidebar.selectbox(t["state"], ["West Bengal", "All", "Bihar", "UP"])
