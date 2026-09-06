@@ -95,4 +95,4 @@ if audio_file:
             text = r.recognize_google(audio, language='bn-IN')
         except:
             text = r.recognize_google(audio, language='en-IN')
-        st
+        
