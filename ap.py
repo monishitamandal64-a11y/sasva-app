@@ -30,9 +30,12 @@ schemes = [
 ]
 df = pd.DataFrame(schemes)
 
-def create_pdf(dataframe):
+def create_pdf(dataframe,photo_path=None):
     pdf = FPDF()
     pdf.add_page()
+    if photo_path and os.path.exists(photo_path):
+        pdf.image(photo_path,x=80,y=10,w=50,h=50)
+        pdf.ln(55)
     pdf.set_font("Arial", "B", 16)
     pdf.cell(200, 10, txt="SASVA - Your Best Schemes", ln=True, align='C')
     pdf.ln(5)
