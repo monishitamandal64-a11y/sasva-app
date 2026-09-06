@@ -30,15 +30,21 @@ schemes = [
 ]
 df = pd.DataFrame(schemes)
 
-def create_pdf(dataframe,photo_path=None):
+def create_pdf(dataframe, photo_path=None):
     pdf = FPDF()
     pdf.add_page()
     if photo_path and os.path.exists(photo_path):
-        pdf.image(photo_path,x=80,y=10,w=50,h=50)
-        pdf.ln(55)
+        try:
+            pdf.image(photo_path, x=80, y=8, w=50, h=50)
+            pdf.ln(58)
+        except:
+            pdf.ln(10)
+    else:
+        pdf.ln(10)
+
     pdf.set_font("Arial", "B", 16)
-    pdf.cell(200, 10, txt="SASVA - Your Best Schemes", ln=True, align='C')
-    pdf.ln(5)
+    pdf.cell(0, 10, txt="SASVA - Your Best Schemes", ln=True, align='C')
+    pdf.ln(8)
     pdf.set_font("Arial", "", 11)
     for i, row in dataframe.iterrows():
         name = str(row['name']).encode('latin-1', 'replace').decode('latin-1')
@@ -48,7 +54,7 @@ def create_pdf(dataframe,photo_path=None):
         pdf.cell(0, 10, txt=f"{i+1}. {name} - Score {row['score']}/100", ln=True)
         pdf.set_font("Arial", "", 11)
         pdf.multi_cell(0, 8, txt=f"Benefit: {benefit}\nEligibility: {eligibility}\nLink: {row['link']}\n")
-        pdf.ln(3)
+        pdf.ln(4)
     out = pdf.output(dest='S')
     return out.encode('latin-1', 'replace') if isinstance(out, str) else bytes(out)
 
@@ -58,12 +64,13 @@ if 'business_value' not in st.session_state:
     st.session_state.business_value = "SC/ST"
 if 'filtered_df' not in st.session_state:
     st.session_state.filtered_df = pd.DataFrame()
+if 'photo_path' not in st.session_state:
+    st.session_state.photo_path = None
 
 st.set_page_config(page_title="SASVA")
 lang = st.sidebar.selectbox("Language", ["English", "বাংলা", "हिंदी"])
 t = translations[lang]
 
-# Moving Welcome
 st.markdown("""
 <style>
 .marquee { width: 100%; overflow: hidden; white-space: nowrap; }
@@ -75,19 +82,25 @@ st.markdown(f'<div class="marquee"><span>✨ {t["title"]} ✨ {t["title"]} ✨ {
 st.markdown(f"<h4 style='text-align: center; color: grey;'>{t['subtitle']}</h4>", unsafe_allow_html=True)
 st.write("---")
 
-# --- SIDEBAR ---
 st.sidebar.title(t["profile"])
-
-# 1. PHOTO UPLOAD + CAMERA
 st.sidebar.subheader(t["photo_label"])
-photo_file = st.sidebar.file_uploader("Upload / Gallery", type=["jpg","jpeg","png"])
-camera_photo = st.sidebar.camera_input("Or Take Photo")
+photo_file = st.sidebar.file_uploader("Gallery", type=["jpg","jpeg","png"], key="upload")
+camera_photo = st.sidebar.camera_input("Camera", key="cam")
 
 final_photo = camera_photo if camera_photo else photo_file
+
 if final_photo:
     st.sidebar.image(final_photo, caption="Your Photo", use_container_width=True)
+    try:
+        img = Image.open(final_photo)
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+        temp_path = "temp_user_photo.jpg"
+        img.save(temp_path)
+        st.session_state.photo_path = temp_path
+    except Exception as e:
+        st.sidebar.error(f"Photo error: {e}")
 
-# 2. VOICE
 audio_file = st.sidebar.audio_input(t["voice_label"])
 if audio_file:
     r = sr.Recognizer()
@@ -101,7 +114,6 @@ if audio_file:
     except:
         st.sidebar.error("Abar bolo")
 
-# AUTO BUSINESS CHANGE
 options = ["SC/ST", "street vendor", "small business", "farmer", "tailor"]
 voice_lower = st.session_state.voice_text.lower()
 new_business = st.session_state.business_value
@@ -136,5 +148,5 @@ if st.button(t["find_btn"]):
 
 if not st.session_state.filtered_df.empty:
     st.write("---")
-    pdf_bytes = create_pdf(st.session_state.filtered_df)
+    pdf_bytes = create_pdf(st.session_state.filtered_df, st.session_state.photo_path)
     st.download_button(label=t["download"], data=pdf_bytes, file_name="SASVA_Schemes.pdf", mime="application/pdf")
