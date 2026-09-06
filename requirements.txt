@@ -2,3 +2,4 @@ streamlit
 pandas
 SpeechRecognition
 fpdf2
+pillow
