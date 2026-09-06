@@ -22,7 +22,19 @@ if audio_file:
     r = sr.Recognizer()
     with sr.AudioFile(audio_file) as source: audio = r.record(source)
     try:
-        text = r.recognize_google(audio, language='bn-IN')
+         if lang == "বাংলা":
+        recog_lang = 'bn-IN'
+    elif lang == "हिंदी":
+        recog_lang = 'hi-IN'
+    else:
+        recog_lang = 'en-IN' # English select korle English ei likhbe
+
+    try:
+        text = r.recognize_google(audio, language=recog_lang)
+        st.session_state.voice_text = text
+        st.sidebar.success(f"You said: {text}")
+    except:
+        st.sidebar.error("Bujhte parini, abar bolo - ektu jore clear kore")
         st.session_state.voice_text = text
         st.sidebar.success(f"You said: {text}")
     except:
