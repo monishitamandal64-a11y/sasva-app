@@ -97,7 +97,7 @@ if audio_file:
         st.session_state.voice_text = text
         st.sidebar.success(f"You said: {text}")
     except:
-        st.sidebar.error("Bujhte parini, abar bolo")
+        st.sidebar.error("repeat/abar bolun/phirse boliyen")
 
 voice_lower = st.session_state.voice_text.lower()
 options = ["SC/ST", "street vendor", "small business", "farmer", "tailor"]
