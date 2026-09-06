@@ -2,11 +2,13 @@ import streamlit as st
 import pandas as pd
 import speech_recognition as sr
 from fpdf import FPDF
+from PIL import Image
+import os
 
 translations = {
-    "English": {"title": "Welcome to SASVA", "subtitle": "AI Scheme Finder for Marginalized Entrepreneurs", "profile": "Your Profile", "business": "Business Type", "state": "State", "income": "Monthly Income (Rs)", "find_btn": "Find Best Schemes", "found": "Found", "for_you": "best schemes!", "benefit": "Benefit", "eligibility": "Eligibility", "apply": "Apply Now", "download": "Download My Plan as PDF", "voice_title": "Voice Assistant", "voice_label": "Click mic & say farmer"},
-    "বাংলা": {"title": "SASVA-তে স্বাগতম", "subtitle": "প্রান্তিক উদ্যোক্তাদের জন্য", "profile": "আপনার প্রোফাইল", "business": "ব্যবসার ধরন", "state": "রাজ্য", "income": "মাসিক আয়", "find_btn": "প্রকল্প খুঁজুন", "found": "পাওয়া গেছে", "for_you": "টি প্রকল্প!", "benefit": "সুবিধা", "eligibility": "যোগ্যতা", "apply": "আবেদন করুন", "download": "PDF ডাউনলোড", "voice_title": "ভয়েস সহকারী", "voice_label": "বলুন... কৃষক"},
-    "हिंदी": {"title": "SASVA में आपका स्वागत है", "subtitle": "वंचित उद्यमियों के लिए", "profile": "प्रोफाइल", "business": "व्यवसाय", "state": "राज्य", "income": "मासिक आय", "find_btn": "योजना खोजें", "found": "मिला", "for_you": "योजनाएं!", "benefit": "लाभ", "eligibility": "पात्रता", "apply": "आवेदन करें", "download": "PDF डाउनलोड", "voice_title": "वॉयस असिस्टेंट", "voice_label": "बोलें... किसान"}
+    "English": {"title": "Welcome to SASVA", "subtitle": "AI Scheme Finder for Marginalized Entrepreneurs", "profile": "Your Profile", "business": "Business Type", "state": "State", "income": "Monthly Income (Rs)", "find_btn": "Find Best Schemes", "found": "Found", "for_you": "best schemes!", "benefit": "Benefit", "eligibility": "Eligibility", "apply": "Apply Now", "download": "Download My Plan as PDF", "voice_label": "Click mic & say farmer", "photo_label": "Your Photo"},
+    "বাংলা": {"title": "SASVA-তে স্বাগতম", "subtitle": "প্রান্তিক উদ্যোক্তাদের জন্য", "profile": "আপনার প্রোফাইল", "business": "ব্যবসার ধরন", "state": "রাজ্য", "income": "মাসিক আয়", "find_btn": "প্রকল্প খুঁজুন", "found": "পাওয়া গেছে", "for_you": "টি প্রকল্প!", "benefit": "সুবিধা", "eligibility": "যোগ্যতা", "apply": "আবেদন করুন", "download": "PDF ডাউনলোড", "voice_label": "বলুন... কৃষক", "photo_label": "আপনার ছবি"},
+    "हिंदी": {"title": "SASVA में आपका स्वागत है", "subtitle": "वंचित उद्यमियों के लिए", "profile": "प्रोफाइल", "business": "व्यवसाय", "state": "राज्य", "income": "मासिक आय", "find_btn": "योजना खोजें", "found": "मिला", "for_you": "योजनाएं!", "benefit": "लाभ", "eligibility": "पात्रता", "apply": "आवेदन करें", "download": "PDF डाउनलोड", "voice_label": "बोलें... किसान", "photo_label": "आपकी फोटो"}
 }
 
 schemes = [
@@ -26,29 +28,27 @@ schemes = [
     {"name": "Dairy Entrepreneurship Scheme", "benefit": "33% subsidy for Dairy farm", "eligibility": "Farmer / Small business", "for": "farmer", "score": 83, "link": "https://dahd.nic.in"},
     {"name": "Antyodaya Saral - Beauty Parlour Scheme", "benefit": "Free training + Rs 1 Lakh kit", "eligibility": "Woman / SC", "for": "small business", "score": 82, "link": "https://saralharyana.gov.in"},
 ]
-
 df = pd.DataFrame(schemes)
 
-# --- PDF FIX ---
 def create_pdf(dataframe):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", "B", 16)
     pdf.cell(200, 10, txt="SASVA - Your Best Schemes", ln=True, align='C')
-    pdf.ln(10)
+    pdf.ln(5)
+    pdf.set_font("Arial", "", 11)
     for i, row in dataframe.iterrows():
         name = str(row['name']).encode('latin-1', 'replace').decode('latin-1')
         benefit = str(row['benefit']).encode('latin-1', 'replace').decode('latin-1')
         eligibility = str(row['eligibility']).encode('latin-1', 'replace').decode('latin-1')
         pdf.set_font("Arial", "B", 12)
-        pdf.cell(0, 10, txt=f"{i+1}. {name} - {row['score']}/100", ln=True)
+        pdf.cell(0, 10, txt=f"{i+1}. {name} - Score {row['score']}/100", ln=True)
         pdf.set_font("Arial", "", 11)
         pdf.multi_cell(0, 8, txt=f"Benefit: {benefit}\nEligibility: {eligibility}\nLink: {row['link']}\n")
         pdf.ln(3)
     out = pdf.output(dest='S')
     return out.encode('latin-1', 'replace') if isinstance(out, str) else bytes(out)
 
-# --- SESSION ---
 if 'voice_text' not in st.session_state:
     st.session_state.voice_text = ""
 if 'business_value' not in st.session_state:
@@ -60,7 +60,7 @@ st.set_page_config(page_title="SASVA")
 lang = st.sidebar.selectbox("Language", ["English", "বাংলা", "हिंदी"])
 t = translations[lang]
 
-# --- MOVING WELCOME ---
+# Moving Welcome
 st.markdown("""
 <style>
 .marquee { width: 100%; overflow: hidden; white-space: nowrap; }
@@ -72,8 +72,19 @@ st.markdown(f'<div class="marquee"><span>✨ {t["title"]} ✨ {t["title"]} ✨ {
 st.markdown(f"<h4 style='text-align: center; color: grey;'>{t['subtitle']}</h4>", unsafe_allow_html=True)
 st.write("---")
 
-# --- SIDEBAR VOICE ---
+# --- SIDEBAR ---
 st.sidebar.title(t["profile"])
+
+# 1. PHOTO UPLOAD + CAMERA
+st.sidebar.subheader(t["photo_label"])
+photo_file = st.sidebar.file_uploader("Upload / Gallery", type=["jpg","jpeg","png"])
+camera_photo = st.sidebar.camera_input("Or Take Photo")
+
+final_photo = camera_photo if camera_photo else photo_file
+if final_photo:
+    st.sidebar.image(final_photo, caption="Your Photo", use_container_width=True)
+
+# 2. VOICE
 audio_file = st.sidebar.audio_input(t["voice_label"])
 if audio_file:
     r = sr.Recognizer()
@@ -87,11 +98,10 @@ if audio_file:
     except:
         st.sidebar.error("Abar bolo")
 
-# --- AUTO BUSINESS CHANGE - 100% WORKING ---
+# AUTO BUSINESS CHANGE
 options = ["SC/ST", "street vendor", "small business", "farmer", "tailor"]
 voice_lower = st.session_state.voice_text.lower()
 new_business = st.session_state.business_value
-
 if any(x in voice_lower for x in ["street", "vendor", "হকার"]): new_business = "street vendor"
 elif any(x in voice_lower for x in ["small", "business", "ব্যবসা", "shop"]): new_business = "small business"
 elif any(x in voice_lower for x in ["farm", "kisan", "কৃষক", "krishi"]): new_business = "farmer"
