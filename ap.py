@@ -82,25 +82,6 @@ st.markdown(f'<div class="marquee"><span>✨ {t["title"]} ✨ {t["title"]} ✨ {
 st.markdown(f"<h4 style='text-align: center; color: grey;'>{t['subtitle']}</h4>", unsafe_allow_html=True)
 st.write("---")
 
-st.sidebar.title(t["profile"])
-st.sidebar.subheader(t["photo_label"])
-photo_file = st.sidebar.file_uploader("Gallery", type=["jpg","jpeg","png"], key="upload")
-camera_photo = st.sidebar.camera_input("Camera", key="cam")
-
-final_photo = camera_photo if camera_photo else photo_file
-
-if final_photo:
-    st.sidebar.image(final_photo, caption="Your Photo", use_container_width=True)
-    try:
-        img = Image.open(final_photo)
-        if img.mode in ("RGBA", "P"):
-            img = img.convert("RGB")
-        temp_path = "temp_user_photo.jpg"
-        img.save(temp_path)
-        st.session_state.photo_path = temp_path
-    except Exception as e:
-        st.sidebar.error(f"Photo error: {e}")
-
 audio_file = st.sidebar.audio_input(t["voice_label"])
 if audio_file:
     r = sr.Recognizer()
