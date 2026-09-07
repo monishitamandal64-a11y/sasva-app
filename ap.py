@@ -136,4 +136,21 @@ business = st.sidebar.selectbox(t["business"], options, index=options.index(st.s
 state = st.sidebar.selectbox(t["state"], ["West Bengal", "All", "Bihar", "UP"])
 income = st.sidebar.number_input(t["income"], value=1000)
 
-if st.button(t
+if st.button(t["find_btn"]):
+    filtered = df[df["for"].str.contains(business, case=False)]
+    if filtered.empty or len(filtered) < 3:
+        filtered = df.sort_values(by="score", ascending=False).head(3)
+    filtered = filtered.sort_values(by="score", ascending=False)
+    st.session_state.filtered_df = filtered
+    st.success(f"{t['found']} {len(filtered)} {t['for_you']}")
+    for _, row in filtered.iterrows():
+        with st.container(border=True):
+            st.subheader(f"{row['name']} - {row['score']}/100")
+            st.write(f"**{t['benefit']}:** {row['benefit']}")
+            st.write(f"**{t['eligibility']}:** {row['eligibility']}")
+            st.link_button(t["apply"], row['link'])
+
+if not st.session_state.filtered_df.empty:
+    st.write("---")
+    pdf_bytes = create_pdf(st.session_state.filtered_df, st.session_state.photo_path)
+    st.download_button(label=t["download"], data=pdf_bytes, file_name="SASVA_Schemes.pdf", mime="application/pdf")
