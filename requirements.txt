@@ -1,5 +1,3 @@
 streamlit
-pandas
+gTTS
 SpeechRecognition
-fpdf2
-pillow
