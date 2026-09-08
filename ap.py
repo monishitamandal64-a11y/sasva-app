@@ -114,8 +114,42 @@ with tab1:
     for s in processed_schemes:
         color = "#22C55E" if s['status']=="Eligible" else "#F59E0B" if s['status']=="Probable" else "#EF4444"
         badge_color = "#DCFCE7" if s['status']=="Eligible" else "#FEF3C7"
-        st.markdown(f"""<div style="background:white; padding:15px; border-radius:10px; border-left:6px solid {color}; border-top:1px solid #eee; margin-bottom:12px;"><div style="display:flex; justify-content:space-between"><h3 style="margin:0">{s['name']} - {s['id']}</h3><span style="background:{badge_color}; padding:6px 12px; border-radius:6px; font-weight:bold;">{s['conf']}% - {s['status']}</span></div><p><strong>{t('ministry_label')}:</strong> {s['ministry']} | <strong>Confidence (F1):</strong> {s['conf']}%</p><p><strong>Evidence (F3):</strong> {s['guidelines']} | <strong>Benefit:</strong> {s['main_benefit']}</p></div>""", unsafe_allow_html=True)
-
+        # --- FLOATING WELCOME BANNER ---
+st.markdown("""
+<style>
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+  50% { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+}
+.floating-welcome {
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  padding: 28px;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 25px;
+  position: sticky;
+  top: 10px;
+  z-index: 999;
+  animation: floatUpDown 3s ease-in-out infinite;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.floating-welcome h1 {
+  color: white;
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: 0.5px;
+}
+.floating-welcome p {
+  color: #cbd5e1;
+  margin-top: 8px;
+  font-size: 16px;
+}
+</style>
+<div class="floating-welcome">
+    <h1>Welcome to SchemeSetu - SASVA</h1>
+    <p>कृपया अपनी भाषा चुनें / Please select your language</p>
+</div>
+""", unsafe_allow_html=True)
         if s['missing']:
             st.error(f"⛔ Blocker (F4): {', '.join(s['missing'])} missing | Approval Prob (F11): {s['approval']}%")
         else:
