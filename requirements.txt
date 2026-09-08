@@ -1,3 +1,4 @@
 streamlit
 PANDAS
 gTTS
+fpdf
