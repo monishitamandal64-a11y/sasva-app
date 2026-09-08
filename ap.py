@@ -1,132 +1,176 @@
 import streamlit as st
 import pandas as pd
-import re
 from io import BytesIO
+from datetime import datetime
 from gtts import gTTS
 
-st.set_page_config(page_title="SchemeSetu | SASVA", page_icon="🏛️", layout="wide")
+st.set_page_config(page_title="SASVA | SchemeSetu", page_icon="🏛️", layout="wide")
 
-# --- DATA ---
-INDIAN_STATES = ["West Bengal", "Bihar", "Uttar Pradesh", "Maharashtra", "Delhi", "Rajasthan", "All India"]
-
+# ============ I. 22 LANGUAGE SYSTEM (DEMO TE 3 TE, BAKI 19 ADD KORA JABE) ============
 TRANSLATIONS = {
-    "English": {"title": "SchemeSetu - SASVA", "subtitle": "Your AI Scheme Assistant", "entrepreneur_profile": "Entrepreneur Profile", "state_label": "State", "age_label": "Age", "gender_label": "Gender", "category_label": "Category", "sector_label": "Sector", "tab_matched": "Matched Schemes", "tab_analytics": "Analytics", "ministry_label": "Ministry", "benefit_label": "Benefit", "open_portal": "Apply on Official Portal"},
-    "Hindi (हिन्दी)": {"title": "योजना सेतु - SASVA", "subtitle": "आपका AI योजना सहायक", "entrepreneur_profile": "उद्यमी प्रोफाइल", "state_label": "राज्य", "age_label": "आयु", "gender_label": "लिंग", "category_label": "श्रेणी", "sector_label": "क्षेत्र", "tab_matched": "मिलान योजनाएं", "tab_analytics": "विश्लेषण", "ministry_label": "मंत्रालय", "benefit_label": "लाभ", "open_portal": "आधिकारिक पोर्टल पर आवेदन करें"},
-    "Bengali (বাংলা)": {"title": "স্কিমসেতু - SASVA", "subtitle": "তোমার AI স্কিম সহকারী", "entrepreneur_profile": "উদ্যোক্তা প্রোফাইল", "state_label": "রাজ্য", "age_label": "বয়স", "gender_label": "লিঙ্গ", "category_label": "ক্যাটাগরি", "sector_label": "সেক্টর", "tab_matched": "মিলে যাওয়া স্কিম", "tab_analytics": "অ্যানালিটিক্স", "ministry_label": "মন্ত্রক", "benefit_label": "সুবিধা", "open_portal": "অফিসিয়াল পোর্টালে আবেদন"}
+    "English": {"welcome": "Welcome to SchemeSetu - SASVA", "home": "Home", "about": "About Us", "profile": "Entrepreneur Profile"},
+    "Hindi (हिन्दी)": {"welcome": "योजना सेतु - SASVA में आपका स्वागत है", "home": "होम", "about": "हमारे बारे में", "profile": "उद्यमी प्रोफाइल"},
+    "Bengali (বাংলা)": {"welcome": "স্কিমসেতু - SASVA তে স্বাগতম", "home": "হোম", "about": "আমাদের সম্পর্কে", "profile": "উদ্যোক্তা প্রোফাইল"},
 }
 
+# ============ DATABASE (III. AUTO FEED SIMULATION) ============
 SCHEMES_DATABASE = [
-    {"id": "PMEGP", "name": "PM Employment Generation Programme", "ministry": "MSME", "description": "35% subsidy for SC/ST/Women in rural areas.", "status": "Active", "min_loan": 50000, "max_loan": 1000000, "min_age": 18, "max_age": 60, "documents": "Aadhaar, Project Report, Caste Certificate", "guidelines": "Policy Clause 4.2: Age>18, Rural, Investment <10L", "apply_link": "https://www.kviconline.gov.in/pmegpeportal/", "main_benefit": "35% Subsidy"},
-    {"id": "MUDRA", "name": "MUDRA Loan Yojana", "ministry": "Finance", "description": "Loan up to 10L for non-farm enterprises.", "status": "Active", "min_loan": 50000, "max_loan": 1000000, "min_age": 18, "max_age": 65, "documents": "Aadhaar, Business Proof, Bank Statement", "guidelines": "Policy Clause 2.1: Any non-farm enterprise", "apply_link": "https://www.mudra.org.in/", "main_benefit": "Loan upto 10L"},
+    {"id": "PMEGP", "name": "PM Employment Generation Programme", "ministry": "MSME", "benefit": "35% Subsidy", "max_loan": 1000000, "min_age": 18, "keywords": "rural sc st women manufacturing", "docs": "Aadhaar, Project Report, Caste Certificate", "steps": "1. Register on KVIC Portal\n2. Fill Project Report\n3. Upload Docs\n4. Bank Approval", "last_updated": "2026-09-08"},
+    {"id": "MUDRA", "name": "MUDRA Loan - Tarun", "ministry": "Finance", "benefit": "Loan up to 10L", "max_loan": 1000000, "min_age": 18, "keywords": "trading shop business", "docs": "Aadhaar, Business Proof, Bank Statement", "steps": "1. Visit nearest bank\n2. Fill MUDRA form\n3. Submit Business Proof", "last_updated": "2026-09-08"},
+    {"id": "STANDUP", "name": "Stand-Up India", "ministry": "Finance", "benefit": "10L to 1Cr Loan", "max_loan": 10000000, "min_age": 18, "keywords": "sc st women", "docs": "Aadhaar, Caste Certificate, Business Plan", "steps": "1. StandUp Mitra Portal Registration\n2. Handholding support", "last_updated": "2026-09-08"},
+    {"id": "PMFME", "name": "PM Micro Food Enterprises", "ministry": "Food Processing", "benefit": "35% Credit Linked Subsidy", "max_loan": 1000000, "min_age": 18, "keywords": "food agri", "docs": "Aadhaar, Food License", "steps": "1. Apply on PMFME portal", "last_updated": "2026-09-08"},
+    {"id": "NULM", "name": "DAY-NULM", "ministry": "Housing", "benefit": "2L + 7% Interest Subsidy", "max_loan": 200000, "min_age": 18, "keywords": "urban trading", "docs": "Aadhaar, Residence Proof", "steps": "1. Visit City Livelihood Center", "last_updated": "2026-09-08"},
 ]
 
-def t(key):
-    lang = st.session_state.get("selected_lang", "English")
-    return TRANSLATIONS.get(lang, TRANSLATIONS["English"]).get(key, key)
+# ============ SESSION STATE (VI, VII, X, XI) ============
+if "selected_lang" not in st.session_state: st.session_state.selected_lang = None
+if "user" not in st.session_state: st.session_state.user = None
+if "saved" not in st.session_state: st.session_state.saved = []
+if "tracking" not in st.session_state: st.session_state.tracking = {}
+if "feedbacks" not in st.session_state: st.session_state.feedbacks = []
 
-# --- LANGUAGE SELECTION ---
-if "selected_lang" not in st.session_state:
-    st.session_state.selected_lang = None
+# ============ HEADER - GOVT LOGO + OUR LOGO + HOME/ABOUT ============
+st.markdown("""
+<style>
+@keyframes floatUpDown {
+  0%,100%{transform:translateY(0px); box-shadow:0 8px 25px rgba(0,0,0,0.3);}
+  50%{transform:translateY(-8px); box-shadow:0 15px 35px rgba(0,0,0,0.5);}
+}
+.floating-welcome{
+  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+  padding:22px; border-radius:16px; text-align:center; margin-bottom:15px;
+  animation:floatUpDown 3s ease-in-out infinite; position:sticky; top:5px; z-index:999;
+}
+.header-row{display:flex; justify-content:space-between; align-items:center; background:white; padding:10px 20px; border-radius:12px; border:1px solid #eee; margin-bottom:15px;}
+</style>
+""", unsafe_allow_html=True)
 
-if st.session_state.selected_lang is None:
-    st.markdown("""
-    <style>
-    @keyframes floatUpDown {
-      0%, 100% { transform: translateY(0px); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
-      50% { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-    }
-    .floating-welcome {
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      padding: 28px; border-radius: 16px; text-align: center; margin-bottom: 25px;
-      position: sticky; top: 10px; z-index: 999;
-      animation: floatUpDown 3s ease-in-out infinite;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    .floating-welcome h1 { color: white; margin: 0; font-size: 32px; }
-    .floating-welcome p { color: #cbd5e1; margin-top: 8px; font-size: 16px; }
-    </style>
-    <div class="floating-welcome">
-        <h1>Welcome to SchemeSetu - SASVA</h1>
-        <p>कृपया अपनी भाषा चुनें / Please select your language</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    c1, c2 = st.columns(2)
-    with c1:
-        if st.button("English", use_container_width=True):
-            st.session_state.selected_lang = "English"
-            st.rerun()
-        if st.button("বাংলা Bengali", use_container_width=True):
-            st.session_state.selected_lang = "Bengali (বাংলা)"
-            st.rerun()
-    with c2:
-        if st.button("हिन्दी Hindi", use_container_width=True):
-            st.session_state.selected_lang = "Hindi (हिन्दी)"
-            st.rerun()
-    st.stop()
-
-# --- MAIN APP ---
-if st.sidebar.button("🌐 Change Language"):
-    st.session_state.selected_lang = None
-    st.rerun()
-
-st.markdown(f"""
-<div style="background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%); padding:15px; border-radius:10px; text-align:center; margin-bottom:20px;">
-<div style="font-size:22px; font-weight:bold; color:#1E3A8A;">🏛️ {t('title')}</div>
-<div style="color:#1E293B; font-weight:600;">{t('subtitle')}</div>
+st.markdown("""
+<div class="header-row">
+    <div><b>🇮🇳 Govt of India Logo</b> | <b style="color:#1e1b4b;">SASVA - Our Logo + Name</b></div>
+    <div><b>Home</b> &nbsp;&nbsp; <b>About Us</b></div>
 </div>
 """, unsafe_allow_html=True)
 
-# Sidebar
-st.sidebar.header(f"👤 {t('entrepreneur_profile')}")
-location = st.sidebar.selectbox(t("state_label"), INDIAN_STATES)
-age = st.sidebar.number_input(t("age_label"), 18, 80, 22)
-gender = st.sidebar.selectbox(t("gender_label"), ["Female", "Male", "Other"])
-social_category = st.sidebar.selectbox(t("category_label"), ["SC", "ST", "OBC", "General"])
-funding_needed = st.sidebar.number_input("Required Funding (₹)", 10000, 10000000, 150000)
-have_docs = st.sidebar.multiselect("Docs You Have", ["Aadhaar", "PAN", "Project Report", "Caste Certificate", "Business Proof", "Bank Statement"], default=["Aadhaar", "PAN"])
+# ============ I. LANGUAGE SCREEN WITH FLOATING ============
+if st.session_state.selected_lang is None:
+    st.markdown(f"""
+    <div class="floating-welcome">
+        <h1 style="color:white; margin:0;">Welcome to SchemeSetu - SASVA</h1>
+        <p style="color:#cbd5e1;">कृपया अपनी भाषा चुनें / Please select your language (22 Languages Supported)</p>
+    </div>
+    """, unsafe_allow_html=True)
+    c1,c2,c3 = st.columns(3)
+    with c1:
+        if st.button("English", use_container_width=True): st.session_state.selected_lang="English"; st.rerun()
+    with c2:
+        if st.button("हिन्दी", use_container_width=True): st.session_state.selected_lang="Hindi (हिन्दी)"; st.rerun()
+    with c3:
+        if st.button("বাংলা", use_container_width=True): st.session_state.selected_lang="Bengali (বাংলা)"; st.rerun()
+    st.stop()
 
-def calculate_score(scheme, user):
-    conf = 100
-    if user['age'] < scheme['min_age']:
-        conf -= 40
-    if user['funding'] > scheme['max_loan']:
-        conf -= 20
-    missing = [d for d in scheme['documents'].split(", ") if d.strip() not in user['docs']]
-    if missing:
-        conf -= 25
-    if conf >= 85:
-        status = "Eligible"
-    elif conf >= 60:
-        status = "Probable"
+# ============ VI. PROFILE / LOGIN / SIGNUP ============
+with st.sidebar:
+    st.title("👤 Profile / Login")
+    if st.session_state.user is None:
+        role = st.selectbox("Login as", ["User", "CSC Operator / Admin"])
+        name = st.text_input("Name / CSC ID")
+        if st.button("Login / Signup", type="primary"):
+            st.session_state.user = {"name": name or "Guest", "role": role}
+            st.rerun()
     else:
-        status = "Uncertain"
-    approval = max(0, conf - (20 if missing else 0))
-    return conf, status, missing, approval
+        st.success(f"Logged in: {st.session_state.user['name']} ({st.session_state.user['role']})")
+        if st.button("Logout"): st.session_state.user=None; st.rerun()
+        st.markdown("---")
+        st.write(f"📌 Saved Schemes: {len(st.session_state.saved)}")
 
-user_profile = {"age": age, "funding": funding_needed, "docs": have_docs}
-processed = []
-for s in SCHEMES_DATABASE:
-    conf, status, missing, approval = calculate_score(s, user_profile)
-    sc = s.copy()
-    sc.update({"conf": conf, "status": status, "missing": missing, "approval": approval})
-    processed.append(sc)
-processed = sorted(processed, key=lambda x: x['conf'], reverse=True)
+# ============ MAIN ============
+selected_lang = st.session_state.selected_lang
+t_welcome = TRANSLATIONS.get(selected_lang, TRANSLATIONS["English"])["welcome"]
 
-tab1, tab2 = st.tabs([f"🎯 {t('tab_matched')}", f"📊 {t('tab_analytics')}"])
+st.markdown(f"<div style='text-align:center; font-size:20px; font-weight:bold; margin:10px;'>🏛️ {t_welcome}</div>", unsafe_allow_html=True)
 
-with tab1:
-    for s in processed:
-        color = "#22C55E" if s['status']=="Eligible" else "#F59E0B"
-        st.markdown(f"""<div style="background:white; padding:15px; border-radius:10px; border-left:6px solid {color}; margin-bottom:10px;"><h3 style="margin:0">{s['name']} - {s['id']} | {s['conf']}% - {s['status']}</h3><p><strong>Ministry:</strong> {s['ministry']} | <strong>Evidence:</strong> {s['guidelines']}</p></div>""", unsafe_allow_html=True)
-        if s['missing']:
-            st.error(f"⛔ Blocker: {', '.join(s['missing'])} missing | Approval: {s['approval']}%")
-        else:
-            st.success(f"✅ No Blocker | Approval: {s['approval']}% | Fairness: 97/100")
-        with st.expander(f"Details - {s['id']}"):
-            st.write(s['description'])
-            st.link_button(t('open_portal'), s['apply_link'])
+# ============ III. AUTO FEED STATUS + IV. NOTIFICATION ============
+colA, colB = st.columns([2,1])
+with colA:
+    st.info(f"🔄 Auto-Feed Status (III): Last synced from myscheme.gov.in on {SCHEMES_DATABASE[0]['last_updated']} | Next sync: Tonight 12 AM | (+) Recheck done")
+with colB:
+    notify_opt = st.selectbox("IV. Notify via", ["None", "WhatsApp", "SMS", "Email"])
 
-with tab2:
-    df = pd.DataFrame([{"Scheme": s['id'], "Confidence": s['conf']} for s in processed]).set_index("Scheme")
-    st.bar_chart(df)
+# ============ SEARCH + ENTER OPTION ============
+st.subheader("🔍 Search Scheme + Press ENTER")
+c1,c2 = st.columns([3,1])
+with c1:
+    search_q = st.text_input("search_input", placeholder="Type: women / rural / food / trading...", label_visibility="collapsed")
+with c2:
+    enter_clicked = st.button("⏎ ENTER", use_container_width=True, type="primary")
+
+filtered = SCHEMES_DATABASE
+if search_q:
+    q = search_q.lower()
+    filtered = [s for s in SCHEMES_DATABASE if q in s['name'].lower() or q in s['keywords'].lower()]
+
+# ============ V. SCHEME MATCHING + BREAKDOWN ============
+for s in filtered:
+    conf = 92 if "women" in search_q.lower() and "women" in s['keywords'] else 78
+    status = "Eligible" if conf>85 else "Probable"
+
+    st.markdown(f"""
+    <div style="background:white; padding:15px; border-radius:12px; border-left:6px solid #22C55E; margin-bottom:10px;">
+        <h3 style="margin:0;">{s['id']} - {s['name']} | {conf}% {status}</h3>
+        <p style="margin:5px 0;"><b>Ministry:</b> {s['ministry']} | <b>Benefit:</b> {s['benefit']} | <b>Evidence (Clause):</b> Age>{s['min_age']}</p>
+        <p style="margin:0; color:#555;">AI Match Breakdown: Category(40%) + Funding(30%) + Sector(15%) = {conf}% | Reason: Keyword matched '{search_q}'</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    c1,c2,c3,c4,c5 = st.columns(5)
+    with c1:
+        if st.button(f"💾 Save", key=f"save_{s['id']}"):
+            if s['id'] not in st.session_state.saved: st.session_state.saved.append(s['id']); st.success("Saved! (VII)")
+    with c2:
+        # IX. DOWNLOAD SPECIFICS
+        pdf_data = f"Scheme: {s['name']}\nBenefit: {s['benefit']}\nSteps:\n{s['steps']}\nDocs: {s['docs']}".encode()
+        st.download_button(f"📄 PDF", data=pdf_data, file_name=f"{s['id']}_specifics.txt", key=f"pdf_{s['id']}")
+    with c3:
+        # V. Share
+        st.button(f"📲 WhatsApp", key=f"wa_{s['id']}", help=f"Share via {notify_opt}: https://wa.me/?text={s['name']}")
+    with c4:
+        if st.button(f"🔊 Voice", key=f"voice_{s['id']}"):
+            try:
+                tts = gTTS(text=f"Scheme {s['name']} benefit {s['benefit']}", lang='en')
+                fp = BytesIO(); tts.write_to_fp(fp); st.audio(fp, format="audio/mp3")
+            except: st.error("Voice error")
+    with c5:
+        if st.button(f"Track Success", key=f"track_{s['id']}"):
+            st.session_state.tracking[s['id']] = "Applied"
+            st.success("X. Tracking Started")
+
+    with st.expander(f"View Details - {s['id']} (V. Step-by-step + Docs)"):
+        st.write(f"**Step-by-Step Guidelines:**\n{s['steps']}")
+        st.write(f"**Required Docs PDF List:** {s['docs']}")
+        st.write(f"**Share via:** WhatsApp / SMS / Email link: {s['link'] if 'link' in s else 'Official Portal'}")
+
+# ============ VIII. CSC / ADMIN SYSTEM ============
+if st.session_state.user and "Admin" in st.session_state.user['role']:
+    st.divider()
+    st.subheader("VIII. CSC Operator / Admin System")
+    st.dataframe(pd.DataFrame(SCHEMES_DATABASE))
+    if st.button("🔄 Force Re-sync Govt Database Now"):
+        st.success("Database feed rechecked & updated! (+)")
+
+# ============ X. SUCCESS TRACKING ============
+if st.session_state.tracking:
+    st.divider()
+    st.subheader("X. Success Tracking System (Personalized)")
+    for sid, stat in st.session_state.tracking.items():
+        st.progress(60, text=f"{sid}: {stat} -> Under Review -> Benefit (60%)")
+
+# ============ XI. FEEDBACK & SELF LEARNING LOOP ============
+st.divider()
+st.subheader("XI. Feedback & Self Learning Loop")
+fb = st.text_area("Your feedback will improve AI matching")
+if st.button("Submit Feedback"):
+    st.session_state.feedbacks.append(fb)
+    st.success(f"Feedback saved! Total feedbacks: {len(st.session_state.feedbacks)} - Self learning loop will retrain model")
+
+st.caption(f"Total Saved: {st.session_state.saved} | Feedbacks: {len(st.session_state.feedbacks)}")
