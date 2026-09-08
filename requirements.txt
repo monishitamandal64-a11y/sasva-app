@@ -1,3 +1,5 @@
 streamlit
-gTTS
+PANDAS
+gTTS==2.5.1
+supabase
 SpeechRecognition
