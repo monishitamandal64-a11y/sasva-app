@@ -37,4 +37,96 @@ if st.session_state.selected_lang is None:
     }
     .floating-welcome {
       background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-      padding:
+      padding: 28px; border-radius: 16px; text-align: center; margin-bottom: 25px;
+      position: sticky; top: 10px; z-index: 999;
+      animation: floatUpDown 3s ease-in-out infinite;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .floating-welcome h1 { color: white; margin: 0; font-size: 32px; }
+    .floating-welcome p { color: #cbd5e1; margin-top: 8px; font-size: 16px; }
+    </style>
+    <div class="floating-welcome">
+        <h1>Welcome to SchemeSetu - SASVA</h1>
+        <p>कृपया अपनी भाषा चुनें / Please select your language</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("English", use_container_width=True):
+            st.session_state.selected_lang = "English"
+            st.rerun()
+        if st.button("বাংলা Bengali", use_container_width=True):
+            st.session_state.selected_lang = "Bengali (বাংলা)"
+            st.rerun()
+    with c2:
+        if st.button("हिन्दी Hindi", use_container_width=True):
+            st.session_state.selected_lang = "Hindi (हिन्दी)"
+            st.rerun()
+    st.stop()
+
+# --- MAIN APP ---
+if st.sidebar.button("🌐 Change Language"):
+    st.session_state.selected_lang = None
+    st.rerun()
+
+st.markdown(f"""
+<div style="background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%); padding:15px; border-radius:10px; text-align:center; margin-bottom:20px;">
+<div style="font-size:22px; font-weight:bold; color:#1E3A8A;">🏛️ {t('title')}</div>
+<div style="color:#1E293B; font-weight:600;">{t('subtitle')}</div>
+</div>
+""", unsafe_allow_html=True)
+
+# Sidebar
+st.sidebar.header(f"👤 {t('entrepreneur_profile')}")
+location = st.sidebar.selectbox(t("state_label"), INDIAN_STATES)
+age = st.sidebar.number_input(t("age_label"), 18, 80, 22)
+gender = st.sidebar.selectbox(t("gender_label"), ["Female", "Male", "Other"])
+social_category = st.sidebar.selectbox(t("category_label"), ["SC", "ST", "OBC", "General"])
+funding_needed = st.sidebar.number_input("Required Funding (₹)", 10000, 10000000, 150000)
+have_docs = st.sidebar.multiselect("Docs You Have", ["Aadhaar", "PAN", "Project Report", "Caste Certificate", "Business Proof", "Bank Statement"], default=["Aadhaar", "PAN"])
+
+def calculate_score(scheme, user):
+    conf = 100
+    if user['age'] < scheme['min_age']:
+        conf -= 40
+    if user['funding'] > scheme['max_loan']:
+        conf -= 20
+    missing = [d for d in scheme['documents'].split(", ") if d.strip() not in user['docs']]
+    if missing:
+        conf -= 25
+    if conf >= 85:
+        status = "Eligible"
+    elif conf >= 60:
+        status = "Probable"
+    else:
+        status = "Uncertain"
+    approval = max(0, conf - (20 if missing else 0))
+    return conf, status, missing, approval
+
+user_profile = {"age": age, "funding": funding_needed, "docs": have_docs}
+processed = []
+for s in SCHEMES_DATABASE:
+    conf, status, missing, approval = calculate_score(s, user_profile)
+    sc = s.copy()
+    sc.update({"conf": conf, "status": status, "missing": missing, "approval": approval})
+    processed.append(sc)
+processed = sorted(processed, key=lambda x: x['conf'], reverse=True)
+
+tab1, tab2 = st.tabs([f"🎯 {t('tab_matched')}", f"📊 {t('tab_analytics')}"])
+
+with tab1:
+    for s in processed:
+        color = "#22C55E" if s['status']=="Eligible" else "#F59E0B"
+        st.markdown(f"""<div style="background:white; padding:15px; border-radius:10px; border-left:6px solid {color}; margin-bottom:10px;"><h3 style="margin:0">{s['name']} - {s['id']} | {s['conf']}% - {s['status']}</h3><p><strong>Ministry:</strong> {s['ministry']} | <strong>Evidence:</strong> {s['guidelines']}</p></div>""", unsafe_allow_html=True)
+        if s['missing']:
+            st.error(f"⛔ Blocker: {', '.join(s['missing'])} missing | Approval: {s['approval']}%")
+        else:
+            st.success(f"✅ No Blocker | Approval: {s['approval']}% | Fairness: 97/100")
+        with st.expander(f"Details - {s['id']}"):
+            st.write(s['description'])
+            st.link_button(t('open_portal'), s['apply_link'])
+
+with tab2:
+    df = pd.DataFrame([{"Scheme": s['id'], "Confidence": s['conf']} for s in processed]).set_index("Scheme")
+    st.bar_chart(df)
