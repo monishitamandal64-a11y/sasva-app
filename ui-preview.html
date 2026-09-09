@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SASVA · SchemeSetu — UI Preview</title>
+<style>
+:root{
+  --violet:#667eea; --plum:#764ba2; --ink:#0f172a; --slate:#475569; --mute:#64748b;
+  --line:#e2e8f0; --paper:#f8fafc; --green:#22C55E; --amber:#f59e0b;
+  --shadow:0 4px 20px rgba(0,0,0,.05); --lift:0 14px 34px rgba(15,23,42,.10);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.shell{max-width:1180px;margin:0 auto;padding:18px 18px 40px}
+
+/* ---------- I. HEADER ---------- */
+.sasva-header{
+  background:#fff;border:1px solid var(--line);border-radius:18px;
+  padding:14px 22px;display:flex;align-items:center;gap:16px;
+  box-shadow:0 6px 24px rgba(15,23,42,.06);margin-bottom:18px;
+}
+.emblem{
+  width:46px;height:46px;border-radius:12px;flex:0 0 46px;font-size:22px;
+  background:linear-gradient(160deg,#ff9933 0%,#fff 50%,#138808 100%);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+}
+.mark{
+  width:46px;height:46px;border-radius:12px;flex:0 0 46px;color:#fff;
+  background:linear-gradient(135deg,var(--violet) 0%,var(--plum) 100%);
+  font-weight:800;font-size:15px;letter-spacing:.5px;line-height:1.05;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+}
+.sasva-header h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.2px}
+.sasva-header p{margin:2px 0 0;font-size:12.5px;color:var(--mute)}
+.nav{margin-left:auto;display:flex;gap:8px}
+.nav button{
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  padding:8px 16px;font-weight:650;font-size:13.5px;color:var(--slate);cursor:pointer;
+  transition:transform .15s ease,box-shadow .15s ease,color .15s ease,border-color .15s ease;
+}
+.nav button:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(102,126,234,.22);color:#4338ca;border-color:var(--violet)}
+.nav button[aria-current="page"]{background:linear-gradient(135deg,var(--violet),var(--plum));color:#fff;border-color:transparent}
+
+/* ---------- LAYOUT ---------- */
+.layout{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
+.sidebar{
+  background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;
+  box-shadow:var(--shadow);position:sticky;top:18px;
+}
+.sidebar h3{font-size:13.5px;margin:0 0 10px;letter-spacing:.2px}
+.sidebar hr{border:none;border-top:1px solid var(--line);margin:16px 0}
+label.f{display:block;font-size:12px;font-weight:650;color:var(--slate);margin:12px 0 5px}
+input,select,textarea{
+  width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:10px;
+  font:inherit;font-size:13.5px;background:#fff;color:var(--ink);
+}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(102,126,234,.35);border-color:var(--violet)}
+.seg{display:flex;gap:6px}
+.seg button{
+  flex:1;padding:8px 4px;border:1px solid var(--line);background:#fff;border-radius:10px;
+  font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--slate);
+}
+.seg button.on{background:linear-gradient(135deg,var(--violet),var(--plum));color:#fff;border-color:transparent}
+.btn{
+  width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;
+  font:inherit;font-weight:650;cursor:pointer;color:var(--slate);
+  transition:transform .15s ease,box-shadow .15s ease,color .15s ease,border-color .15s ease;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(102,126,234,.25);color:#4338ca;border-color:var(--violet)}
+.btn.primary{background:linear-gradient(135deg,var(--violet),var(--plum));color:#fff;border:none}
+.btn.primary:hover{color:#fff;box-shadow:0 12px 26px rgba(102,126,234,.42)}
+.note{border-radius:12px;padding:10px 12px;font-size:12.5px;margin-top:12px}
+.note.ok{background:#dcfce7;border:1px solid #86efac;color:#15803d}
+.note.info{background:#e0e7ff;border:1px solid #c7d2fe;color:#3730a3}
+.tiny{font-size:11.5px;color:var(--mute);margin-top:10px}
+
+/* ---------- II. FLOATING WELCOME ---------- */
+@keyframes floatUpDown{0%{transform:translateY(0)}50%{transform:translateY(-14px)}100%{transform:translateY(0)}}
+.welcome-card{
+  background:linear-gradient(135deg,var(--violet) 0%,var(--plum) 100%);
+  color:#fff;max-width:800px;margin:8px auto 22px;padding:34px 28px;border-radius:24px;
+  text-align:center;box-shadow:0 22px 50px rgba(102,126,234,.32);
+  animation:floatUpDown 3.5s ease-in-out infinite;
+}
+.welcome-card h2{margin:0;font-size:31px;font-weight:800;letter-spacing:-.4px}
+.welcome-card p{margin:10px auto 0;font-size:16px;opacity:.93;max-width:60ch}
+.pill{
+  display:inline-block;margin-top:16px;padding:7px 18px;border-radius:999px;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+  font-size:13.5px;font-weight:600;
+}
+.langs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:800px;margin:0 auto 14px}
+.langs button{
+  padding:13px 8px;border-radius:14px;border:1px solid var(--line);background:#fff;
+  font:inherit;font-size:15px;font-weight:700;cursor:pointer;color:var(--slate);
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+}
+.langs button:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(102,126,234,.25);border-color:var(--violet)}
+.langs button.on{background:linear-gradient(135deg,var(--violet),var(--plum));color:#fff;border-color:transparent}
+
+/* ---------- III. SYNC STRIP ---------- */
+.sync-strip{
+  max-width:800px;margin:0 auto 10px;padding:11px 18px;border-radius:14px;text-align:center;
+  background:linear-gradient(135deg,#ecfdf5 0%,#f0fdf4 100%);
+  border:1px solid #bbf7d0;color:#14532d;font-size:13px;
+}
+.sync-strip b{color:#166534}
+.sync-dot{
+  display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);
+  margin-right:7px;animation:floatUpDown 2s ease-in-out infinite;
+}
+.resync-wrap{max-width:420px;margin:0 auto 6px}
+
+/* ---------- SECTIONS ---------- */
+.section-title{
+  font-size:19px;font-weight:800;margin:26px 0 10px;padding-left:12px;
+  border-left:5px solid var(--violet);
+}
+.soft-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
+
+/* ---------- V. SEARCH ---------- */
+.searchbar{display:flex;gap:10px;align-items:stretch}
+.searchbar input{flex:1;padding:12px 14px;font-size:15px;border-radius:12px}
+.searchbar .btn{width:auto;padding:12px 22px;white-space:nowrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chips button{
+  padding:7px 15px;border-radius:999px;border:1px solid var(--line);background:#fff;
+  font:inherit;font-size:13px;font-weight:600;color:var(--slate);cursor:pointer;
+  transition:transform .15s ease,border-color .15s ease,color .15s ease;
+}
+.chips button:hover{transform:translateY(-2px);border-color:var(--violet);color:#4338ca}
+.chips button.on{background:#eef2ff;border-color:#c7d2fe;color:#3730a3}
+
+/* ---------- VI. SCHEME CARD ---------- */
+.scheme-card{
+  background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%);
+  padding:20px;border-radius:16px;border:1px solid var(--line);
+  border-left:6px solid var(--green);box-shadow:var(--shadow);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.scheme-card:hover{transform:translateY(-3px);box-shadow:var(--lift)}
+.scheme-card.warn{border-left-color:var(--amber)}
+.scheme-card h3{margin:0 0 2px;font-size:18.5px;font-weight:750;letter-spacing:-.2px}
+.scheme-card .sub{font-size:12.5px;color:var(--mute);margin-bottom:12px}
+.scheme-card .benefit{font-size:14.5px;color:#1e293b;max-width:78ch}
+.badge{display:inline-block;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;margin:0 6px 8px 0}
+.badge-green{background:#dcfce7;color:#15803d;border:1px solid #86efac}
+.badge-amber{background:#fef3c7;color:#b45309;border:1px solid #fcd34d}
+.badge-blue{background:#e0e7ff;color:#4338ca;border:1px solid #c7d2fe}
+.badge-grey{background:#f1f5f9;color:var(--slate);border:1px solid var(--line)}
+.bd-wrap{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.bd-title{font-size:11.5px;font-weight:800;color:var(--slate);margin-bottom:8px}
+.bd-row{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.bd-label{width:168px;flex:0 0 168px;font-size:12px;color:var(--slate)}
+.bd-track{flex:1;height:8px;border-radius:999px;background:#eef2f7;overflow:hidden}
+.bd-fill{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--violet),var(--plum));transition:width .4s ease}
+.bd-val{width:70px;text-align:right;font-size:12px;font-weight:700;color:#334155}
+.blocker{font-size:12.5px;color:#b45309;margin-top:10px}
+
+/* ---------- VII. ACTIONS ---------- */
+.actions{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 0}
+.actions button,.actions a{
+  padding:9px 6px;border-radius:12px;border:1px solid var(--line);background:#fff;
+  font:inherit;font-size:13px;font-weight:650;color:var(--slate);cursor:pointer;
+  text-align:center;text-decoration:none;
+  transition:transform .15s ease,box-shadow .15s ease,color .15s ease,border-color .15s ease;
+}
+.actions button:hover,.actions a:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(102,126,234,.22);color:#4338ca;border-color:var(--violet)}
+.actions button.done{background:#dcfce7;border-color:#86efac;color:#15803d}
+
+/* ---------- VIII. EXPANDER ---------- */
+details{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+details summary{
+  cursor:pointer;padding:12px 16px;font-size:13.5px;font-weight:650;color:var(--slate);
+  list-style:none;display:flex;align-items:center;gap:8px;
+}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"▾";margin-left:auto;transition:transform .2s ease}
+details[open] summary::after{transform:rotate(180deg)}
+details summary:hover{background:#f8fafc;color:#4338ca}
+.guide{display:grid;grid-template-columns:1.25fr 1fr;gap:22px;padding:4px 18px 18px;font-size:13.5px}
+.guide h4{margin:0 0 8px;font-size:13px}
+.guide ol,.guide ul{margin:0;padding-left:20px;color:var(--slate);line-height:1.75}
+.guide a{color:#4338ca;font-weight:650}
+.card-wrap{margin-bottom:22px}
+
+/* ---------- IX. TRACKING ---------- */
+.track-row{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
+.track-head{display:flex;align-items:baseline;gap:10px;font-size:14px}
+.track-head b{font-weight:750}
+.track-head .pct{margin-left:auto;font-weight:800;color:#4338ca}
+.track-stage{font-size:12.5px;color:var(--mute)}
+.bar{height:10px;border-radius:999px;background:#eef2f7;overflow:hidden;margin:10px 0 6px}
+.bar > span{display:block;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--violet),var(--plum));transition:width .5s ease}
+
+/* ---------- TABLES ---------- */
+table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
+.tablewrap{border:1px solid var(--line);border-radius:14px;overflow:auto;box-shadow:var(--shadow);max-height:340px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid #eef2f7;white-space:nowrap}
+th{background:#f8fafc;font-size:11.5px;color:var(--slate);position:sticky;top:0}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr:hover{background:#fbfcfe}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.metric{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.metric span{display:block;font-size:11.5px;color:var(--mute);font-weight:650}
+.metric b{font-size:24px;font-weight:800;letter-spacing:-.5px}
+
+/* ---------- X / XI ---------- */
+.two{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start}
+.fb-row{display:flex;gap:14px;align-items:center;margin:12px 0}
+.fb-row .seg{max-width:180px}
+.loop{padding-left:18px;margin:8px 0 0;font-size:13.5px;color:var(--slate);line-height:1.75}
+
+/* ---------- MISC ---------- */
+.foot{text-align:center;color:#94a3b8;font-size:12px;margin-top:34px;line-height:1.8}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);
+  background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;font-size:13.5px;
+  font-weight:600;opacity:0;pointer-events:none;transition:all .25s ease;z-index:60;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.modal{
+  position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;
+  align-items:flex-start;justify-content:center;padding:30px 16px;overflow:auto;z-index:70;
+}
+.modal.show{display:flex}
+.sheet{background:#fff;max-width:760px;width:100%;border-radius:18px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+.sheet-top{background:linear-gradient(135deg,var(--violet),var(--plum));color:#fff;padding:22px 26px}
+.sheet-top h2{margin:0;font-size:21px}
+.sheet-top p{margin:4px 0 0;font-size:12.5px;opacity:.9}
+.sheet-body{padding:22px 26px}
+.sheet-body h4{margin:18px 0 6px;font-size:12.5px;background:#eef2f7;padding:7px 10px;border-radius:8px}
+.sheet-body ul,.sheet-body ol{margin:0;padding-left:20px;font-size:13.5px;color:#1e293b;line-height:1.7}
+.sheet-body .meta{font-size:13px;color:var(--slate)}
+.sheet-body .disclaim{font-size:11.5px;color:var(--mute);font-style:italic;margin-top:18px}
+.sheet-actions{display:flex;gap:10px;justify-content:flex-end;padding:0 26px 22px}
+.sheet-actions .btn{width:auto;padding:10px 20px}
+.about p{max-width:76ch;color:#1e293b}
+.hidden{display:none !important}
+
+@media (max-width:940px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:static}
+  .two,.guide{grid-template-columns:1fr}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .shell{padding:12px 12px 32px}
+  .sasva-header{flex-wrap:wrap;padding:12px 14px;gap:12px}
+  .nav{margin-left:0;width:100%}
+  .nav button{flex:1}
+  .welcome-card{padding:24px 18px;border-radius:20px}
+  .welcome-card h2{font-size:23px}
+  .langs{grid-template-columns:1fr}
+  .searchbar{flex-direction:column}
+  .searchbar .btn{width:100%}
+  .actions{grid-template-columns:repeat(2,1fr)}
+  .bd-label{width:112px;flex:0 0 112px;font-size:11px}
+  .scheme-card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+@media print{
+  body *{visibility:hidden}
+  .modal,.modal *{visibility:visible}
+  .modal{position:absolute;inset:0;background:#fff;padding:0}
+  .sheet{box-shadow:none;max-width:100%}
+  .sheet-actions{display:none}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- I. HEADER -->
+  <header class="sasva-header">
+    <div class="emblem">🇮🇳</div>
+    <div class="mark">SAS<br>VA</div>
+    <div>
+      <h1>SASVA · SchemeSetu</h1>
+      <p>Government of India scheme discovery for marginalised entrepreneurs · Team NEXUS · SIH26092</p>
+    </div>
+    <nav class="nav">
+      <button id="navHome" aria-current="page">Home</button>
+      <button id="navAbout">About Us</button>
+    </nav>
+  </header>
+
+  <div class="layout">
+
+    <!-- IV. SIDEBAR: LOGIN + ROLE + PROFILE -->
+    <aside class="sidebar">
+      <h3>🔐 Login</h3>
+      <label class="f" for="role">Login as</label>
+      <select id="role">
+        <option>User</option>
+        <option>CSC Operator</option>
+        <option>Admin</option>
+      </select>
+      <label class="f" for="uname">Your name</label>
+      <input id="uname" placeholder="Rekha Das">
+      <div style="margin-top:12px"><button class="btn primary" id="loginBtn">Login / Update</button></div>
+      <div id="loginState" class="note info">Browsing as guest. Add a name to save schemes.</div>
+
+      <hr>
+      <h3>👤 Entrepreneur profile</h3>
+      <label class="f" for="pcat">Social category</label>
+      <select id="pcat">
+        <option>General</option><option>SC</option><option>ST</option>
+        <option>OBC</option><option>Minority</option><option>PwD</option>
+      </select>
+      <label class="f">Gender</label>
+      <div class="seg" id="pgender">
+        <button data-v="Female" class="on">Female</button>
+        <button data-v="Male">Male</button>
+        <button data-v="Other">Other</button>
+      </div>
+      <label class="f" for="page">Age</label>
+      <input id="page" type="number" min="18" max="75" value="32">
+      <label class="f" for="psector">Business sector</label>
+      <select id="psector">
+        <option>Food Processing</option><option>Manufacturing</option><option>Services</option>
+        <option>Trading</option><option>Handicraft</option><option>Agriculture Allied</option>
+        <option>Technology</option>
+      </select>
+      <label class="f" for="pfund">Funding needed (Rs)</label>
+      <input id="pfund" type="number" min="10000" step="10000" value="300000">
+      <label class="f">Area</label>
+      <div class="seg" id="pregion">
+        <button data-v="Rural" class="on">Rural</button>
+        <button data-v="Urban">Urban</button>
+      </div>
+      <label class="f" for="pstate">State</label>
+      <input id="pstate" value="West Bengal">
+      <div class="tiny" id="sideStats">💾 Saved: 0 · 📈 Tracked: 0</div>
+      <div class="tiny">Engine: 🟢 local scoring, identical weights to the FastAPI server</div>
+    </aside>
+
+    <!-- MAIN -->
+    <main>
+      <section id="homeView">
+        <!-- II. FLOATING WELCOME -->
+        <div class="welcome-card">
+          <h2 id="wTitle">Welcome to SchemeSetu - SASVA</h2>
+          <p id="wTag">Find the government scheme that actually fits you, in one minute.</p>
+          <div class="pill" id="wPill">🌐 22 Languages Supported</div>
+        </div>
+        <div class="langs" id="langBtns">
+          <button data-l="English" class="on">🌐 English</button>
+          <button data-l="हिन्दी">🌐 हिन्दी</button>
+          <button data-l="বাংলা">🌐 বাংলা</button>
+        </div>
+
+        <!-- III. AUTO-FEED SIMULATION -->
+        <div class="sync-strip" id="syncStrip"></div>
+        <div class="resync-wrap hidden" id="resyncWrap">
+          <button class="btn primary" id="resyncBtn">🔄 Force Re-sync Govt Database Now</button>
+        </div>
+        <div id="resyncMsg"></div>
+
+        <!-- V. SEARCH -->
+        <div class="section-title" id="tFind">Find your scheme</div>
+        <div class="searchbar">
+          <input id="q" placeholder="Type: women / rural / food / trading...">
+          <button class="btn primary" id="enterBtn">⏎ ENTER</button>
+        </div>
+        <div class="chips" id="chips">
+          <button data-c="women">women</button>
+          <button data-c="rural">rural</button>
+          <button data-c="food">food</button>
+          <button data-c="trading">trading</button>
+          <button data-c="artisan">artisan</button>
+          <button data-c="">clear</button>
+        </div>
+
+        <!-- VI + VII + VIII. RESULTS -->
+        <div class="section-title" id="resultsTitle">Matched schemes</div>
+        <div id="results"></div>
+
+        <!-- SAVED -->
+        <div id="savedBlock" class="hidden">
+          <div class="section-title">💾 Your saved shortlist</div>
+          <div class="tablewrap"><table>
+            <thead><tr><th>Scheme</th><th>Ministry</th><th>Funding band</th></tr></thead>
+            <tbody id="savedBody"></tbody>
+          </table></div>
+          <div style="margin-top:10px;max-width:200px"><button class="btn" id="clearSaved">Clear shortlist</button></div>
+        </div>
+
+        <!-- IX. SUCCESS TRACKING -->
+        <div class="section-title" id="tTrack">X. Success Tracking</div>
+        <div id="trackBlock"></div>
+
+        <!-- XI. NOTIFICATIONS -->
+        <div class="section-title">🔔 XI. Notifications</div>
+        <div class="two">
+          <div class="soft-card">
+            <label class="f" for="notify" id="tNotify">Notification preference</label>
+            <select id="notify"><option>None</option><option>WhatsApp</option><option>SMS</option><option>Email</option></select>
+          </div>
+          <div class="note info" id="notifyMsg">No alerts. New matching schemes will only appear inside the app.</div>
+        </div>
+
+        <!-- X. FEEDBACK -->
+        <div class="section-title" id="tFeedback">💬 X. Feedback and self learning loop</div>
+        <div class="two">
+          <div class="soft-card">
+            <label class="f" for="fbScheme">Which scheme is this about?</label>
+            <select id="fbScheme"></select>
+            <label class="f" for="fbText">Tell us what was wrong or missing</label>
+            <textarea id="fbText" rows="3" placeholder="The subsidy amount for my district was different, or this scheme did not fit me because..."></textarea>
+            <div class="fb-row">
+              <span style="font-size:12.5px;font-weight:650;color:var(--slate)">Was the match helpful?</span>
+              <div class="seg" id="fbHelpful"><button data-v="Yes" class="on">Yes</button><button data-v="No">No</button></div>
+            </div>
+            <div style="max-width:220px"><button class="btn primary" id="fbSubmit">Submit feedback</button></div>
+            <div id="fbMsg"></div>
+          </div>
+          <div class="soft-card">
+            <b style="font-size:13.5px">How the loop works</b>
+            <ol class="loop">
+              <li>Your comment is tokenised into keyword signals.</li>
+              <li>Signals adjust the scheme keyword weights.</li>
+              <li>The nightly job re-ranks the catalogue.</li>
+              <li>Next visit, the shortlist reflects it.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- ADMIN / OPERATOR DASHBOARD -->
+        <div id="dashBlock" class="hidden">
+          <div class="section-title" id="dashTitle">🛠️ Admin dashboard</div>
+          <div class="metrics" id="dashMetrics"></div>
+          <div class="tablewrap"><table>
+            <thead><tr><th>ID</th><th>Scheme</th><th>Ministry</th><th>Min (Rs)</th><th>Max (Rs)</th><th>Categories</th><th>Sectors</th><th>Area</th></tr></thead>
+            <tbody id="dashBody"></tbody>
+          </table></div>
+          <div id="fbTableWrap" class="hidden" style="margin-top:14px">
+            <div class="tiny" style="font-weight:650">Feedback captured in this session</div>
+            <div class="tablewrap" style="max-height:200px"><table>
+              <thead><tr><th>Scheme</th><th>Helpful</th><th>Comment</th></tr></thead>
+              <tbody id="fbBody"></tbody>
+            </table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="aboutView" class="hidden about">
+        <div class="section-title">About SASVA</div>
+        <div class="soft-card">
+          <p style="margin-top:0"><b>SASVA</b> is a scheme matching layer for entrepreneurs who lose money and time to the
+          wrong application. Women, SC and ST founders, street vendors, artisans and micro food units are eligible for
+          schemes they never hear about, and apply for ones they can never qualify for.</p>
+          <p>SASVA reads a short profile, scores every scheme in the catalogue on four auditable weights, and returns a
+          ranked shortlist with the documents, the steps and the portal link. Every card can leave the app as a real PDF,
+          a WhatsApp message or spoken audio, so a CSC operator can hand it to someone who does not read English.</p>
+          <p style="margin-bottom:0"><b>Team NEXUS</b> · Smart India Hackathon 2026 · Problem ID SIH26092 ·
+          Theme Smart Automation · Team ID IIC_TMSL_P9_S10</p>
+        </div>
+        <div class="section-title">How the score is built</div>
+        <div class="tablewrap" style="max-height:none"><table>
+          <thead><tr><th>Component</th><th>Weight</th><th>What earns full marks</th></tr></thead>
+          <tbody>
+            <tr><td>Category</td><td class="num">40</td><td>Scheme is reserved for your category, or reserved for women and you are a woman</td></tr>
+            <tr><td>Funding</td><td class="num">30</td><td>Your requirement sits inside a tight band, not a 1 lakh to 5 crore catch-all</td></tr>
+            <tr><td>Sector</td><td class="num">15</td><td>Scheme specialises in your sector</td></tr>
+            <tr><td>Region</td><td class="num">15</td><td>Scheme is exclusive to your area type</td></tr>
+          </tbody>
+        </table></div>
+        <div class="section-title">Languages in the roadmap</div>
+        <div class="soft-card" id="langList"></div>
+      </section>
+
+      <div class="foot">
+        <b>SASVA · SchemeSetu</b> · AI driven scheme matching for marginalised entrepreneurs<br>
+        Team NEXUS · Smart India Hackathon 2026 · Problem ID SIH26092 · Theme Smart Automation · Team ID IIC_TMSL_P9_S10<br>
+        Scheme figures are seeded from public government pages and must be verified on the ministry portal before applying.<br>
+        This page is the UI preview. In the deployed app the PDF is generated server side by fpdf2 and the voice by gTTS.
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   DATA  (injected verbatim from data/schemes.json at build time)
+   ===================================================================== */
+const DATA = {
+ "meta": {
+  "source": "Seeded from public scheme listings on myscheme.gov.in and the respective ministry portals",
+  "collected_on": "2026-09-10",
+  "last_synced": "2026-09-10T00:00:00",
+  "schemes_live": 14,
+  "schemes_in_pipeline": 312,
+  "accuracy_note": "DEMO DATASET. Every amount below is copied from the scheme's public page at collection time and must be re-verified against the ministry portal before any beneficiary-facing use. Funding ranges are stored in INR."
+ },
+ "schemes": [
+  {
+   "id": "PMEGP",
+   "name": "Prime Minister's Employment Generation Programme",
+   "short": "PMEGP",
+   "ministry": "Ministry of MSME (through KVIC)",
+   "benefit": "Margin money subsidy of 15% to 35% of project cost. Project cost up to Rs 50 lakh for manufacturing and Rs 20 lakh for service units.",
+   "funding_min": 100000,
+   "funding_max": 5000000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD",
+    "Ex-Servicemen"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Manufacturing",
+    "Services",
+    "Food Processing",
+    "Handicraft"
+   ],
+   "regions": [
+    "Rural",
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "new business",
+    "subsidy",
+    "manufacturing",
+    "rural",
+    "women",
+    "khadi",
+    "loan",
+    "unit",
+    "self employment"
+   ],
+   "docs": [
+    "Aadhaar and PAN",
+    "Passport size photograph",
+    "Project report with cost estimate",
+    "Caste or special category certificate if claiming higher subsidy",
+    "Education certificate for projects above Rs 10 lakh",
+    "Rural area certificate from Panchayat if applicable"
+   ],
+   "steps": [
+    "Register on the PMEGP e-portal at kviconline.gov.in and pick individual applicant.",
+    "Fill the project details, choose your activity and the financing bank branch.",
+    "Upload the project report and the category certificate, then submit.",
+    "Attend the District Level Task Force interview when called.",
+    "Bank appraises and sanctions the loan, then you complete EDP training.",
+    "Margin money subsidy is credited as a term deposit and adjusted after 3 years."
+   ],
+   "link": "https://www.kviconline.gov.in/pmegpeportal/",
+   "helpline": "KVIC state office or district industries centre"
+  },
+  {
+   "id": "MUDRA",
+   "name": "Pradhan Mantri MUDRA Yojana",
+   "short": "PM MUDRA",
+   "ministry": "Ministry of Finance, Department of Financial Services",
+   "benefit": "Collateral free loans in three tiers. Shishu up to Rs 50 thousand, Kishore Rs 50 thousand to Rs 5 lakh, Tarun Rs 5 lakh to Rs 10 lakh.",
+   "funding_min": 10000,
+   "funding_max": 1000000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Manufacturing",
+    "Services",
+    "Trading",
+    "Food Processing",
+    "Handicraft",
+    "Agriculture Allied"
+   ],
+   "regions": [
+    "Rural",
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 65,
+   "keywords": [
+    "loan",
+    "working capital",
+    "trading",
+    "shop",
+    "collateral free",
+    "small business",
+    "micro"
+   ],
+   "docs": [
+    "Aadhaar and PAN",
+    "Two passport size photographs",
+    "Business address proof",
+    "Six month bank statement",
+    "Quotation of machinery or stock to be purchased",
+    "Udyam registration if available"
+   ],
+   "steps": [
+    "Decide the tier that matches your requirement, Shishu, Kishore or Tarun.",
+    "Walk in to any bank, small finance bank, NBFC or MFI that lends under MUDRA.",
+    "Submit the one page MUDRA application with KYC and business proof.",
+    "Bank verifies the business activity and sanctions without collateral.",
+    "Receive a MUDRA card or cash credit limit for working capital."
+   ],
+   "link": "https://www.mudra.org.in/",
+   "helpline": "1800 180 1111"
+  },
+  {
+   "id": "STANDUP",
+   "name": "Stand-Up India Scheme",
+   "short": "Stand-Up India",
+   "ministry": "Ministry of Finance, Department of Financial Services",
+   "benefit": "Composite loan of Rs 10 lakh to Rs 1 crore for a greenfield enterprise, reserved for SC, ST and women entrepreneurs.",
+   "funding_min": 1000000,
+   "funding_max": 10000000,
+   "categories": [
+    "SC",
+    "ST"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Manufacturing",
+    "Services",
+    "Trading",
+    "Agriculture Allied",
+    "Food Processing"
+   ],
+   "regions": [
+    "Rural",
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "greenfield",
+    "sc",
+    "st",
+    "women",
+    "first time",
+    "large loan",
+    "crore",
+    "manufacturing"
+   ],
+   "docs": [
+    "Aadhaar and PAN",
+    "Caste certificate for SC or ST applicants",
+    "Detailed project report",
+    "Proof that this is your first venture in the activity",
+    "Company or firm registration document",
+    "Bank statement of the past six months"
+   ],
+   "steps": [
+    "Register your profile on standupmitra.in and record the loan requirement.",
+    "Get handholding support for the project report from the linked agency.",
+    "Application is routed to the selected bank branch, SIDBI or NABARD office.",
+    "Bank appraises the greenfield project and sanctions a composite loan.",
+    "Credit guarantee cover is applied instead of collateral where eligible."
+   ],
+   "link": "https://www.standupmitra.in/",
+   "helpline": "1800 180 1111"
+  },
+  {
+   "id": "PMFME",
+   "name": "PM Formalisation of Micro Food Processing Enterprises",
+   "short": "PMFME",
+   "ministry": "Ministry of Food Processing Industries",
+   "benefit": "Credit linked capital subsidy of 35% of project cost capped at Rs 10 lakh per unit. Seed capital of Rs 40 thousand per SHG member for working capital.",
+   "funding_min": 100000,
+   "funding_max": 3000000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Food Processing",
+    "Manufacturing",
+    "Agriculture Allied"
+   ],
+   "regions": [
+    "Rural",
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "food",
+    "processing",
+    "pickle",
+    "bakery",
+    "dairy",
+    "masala",
+    "one district one product",
+    "subsidy",
+    "shg"
+   ],
+   "docs": [
+    "Aadhaar and PAN",
+    "Udyam registration certificate",
+    "FSSAI registration or application receipt",
+    "Detailed project report with machinery quotation",
+    "Land or rent document for the unit",
+    "Bank account details and last six month statement"
+   ],
+   "steps": [
+    "Apply on the PMFME portal and pick individual micro enterprise or SHG member.",
+    "Get mapped to your District Resource Person for the project report.",
+    "Nodal officer recommends the file to the lending bank.",
+    "Bank sanctions the term loan and the 35% subsidy is claimed on it.",
+    "Complete the mandatory food processing and hygiene training.",
+    "Subsidy is released to the bank and adjusted against your loan."
+   ],
+   "link": "https://pmfme.mofpi.gov.in/",
+   "helpline": "District Resource Person of your district"
+  },
+  {
+   "id": "NULM",
+   "name": "DAY-NULM Self Employment Programme",
+   "short": "DAY-NULM SEP",
+   "ministry": "Ministry of Housing and Urban Affairs",
+   "benefit": "Interest subvention so that the borrower pays 7%. Individual loans up to Rs 2 lakh and group enterprise loans up to Rs 10 lakh.",
+   "funding_min": 50000,
+   "funding_max": 1000000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Services",
+    "Trading",
+    "Manufacturing",
+    "Food Processing",
+    "Handicraft"
+   ],
+   "regions": [
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 60,
+   "keywords": [
+    "urban",
+    "poor",
+    "interest subsidy",
+    "group",
+    "shg",
+    "city",
+    "vendor",
+    "services"
+   ],
+   "docs": [
+    "Aadhaar and residence proof of the urban local body area",
+    "Below poverty line or urban poor identification proof",
+    "Project or activity note",
+    "Bank account details",
+    "Group resolution and member list for group loans",
+    "Skill training certificate if available"
+   ],
+   "steps": [
+    "Approach the City Mission Management Unit of your municipal body.",
+    "Submit the SEP application with the urban poor proof.",
+    "Task force screens the application and recommends it to the bank.",
+    "Bank sanctions the loan, interest subvention is credited quarterly.",
+    "Attend the entrepreneurship development programme arranged by the ULB."
+   ],
+   "link": "https://nulm.gov.in/",
+   "helpline": "City Mission Management Unit of your municipality"
+  },
+  {
+   "id": "SVANIDHI",
+   "name": "PM Street Vendor's AtmaNirbhar Nidhi",
+   "short": "PM SVANidhi",
+   "ministry": "Ministry of Housing and Urban Affairs",
+   "benefit": "Collateral free working capital loan of Rs 10 thousand, then Rs 20 thousand, then Rs 50 thousand on timely repayment. 7% interest subsidy and cashback on digital payments.",
+   "funding_min": 10000,
+   "funding_max": 50000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Trading",
+    "Services",
+    "Food Processing"
+   ],
+   "regions": [
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "street vendor",
+    "hawker",
+    "thela",
+    "small capital",
+    "urban",
+    "cart",
+    "food stall",
+    "trading"
+   ],
+   "docs": [
+    "Certificate of vending or identity card from the urban local body",
+    "Aadhaar linked mobile number",
+    "Bank account details",
+    "Letter of recommendation from the ULB if you have no vending certificate"
+   ],
+   "steps": [
+    "Check your vendor category on the PM SVANidhi portal or at a CSC centre.",
+    "Apply through the portal, a CSC operator or a participating bank.",
+    "ULB verifies your vending status.",
+    "Loan is sanctioned and credited, usually within a few weeks.",
+    "Repay on time to unlock the next higher tranche."
+   ],
+   "link": "https://pmsvanidhi.mohua.gov.in/",
+   "helpline": "1800 111 979"
+  },
+  {
+   "id": "VISHWAKARMA",
+   "name": "PM Vishwakarma Yojana",
+   "short": "PM Vishwakarma",
+   "ministry": "Ministry of MSME",
+   "benefit": "Toolkit incentive of Rs 15 thousand, skill training with a stipend, and collateral free credit of Rs 1 lakh in the first tranche and Rs 2 lakh in the second at 5% interest.",
+   "funding_min": 15000,
+   "funding_max": 300000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Handicraft",
+    "Manufacturing",
+    "Services"
+   ],
+   "regions": [
+    "Rural",
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "artisan",
+    "craft",
+    "carpenter",
+    "tailor",
+    "potter",
+    "blacksmith",
+    "toolkit",
+    "traditional",
+    "handicraft",
+    "skill"
+   ],
+   "docs": [
+    "Aadhaar and PAN",
+    "Proof of practising one of the 18 notified trades",
+    "Bank account details",
+    "Mobile number linked to Aadhaar",
+    "Ration card or family details"
+   ],
+   "steps": [
+    "Get enrolled by a CSC operator on the PM Vishwakarma portal.",
+    "Trade is verified at the Gram Panchayat or ULB level, then district level.",
+    "Receive the PM Vishwakarma certificate and digital ID.",
+    "Complete basic skill training and claim the toolkit incentive.",
+    "Apply for the first credit tranche through the linked bank."
+   ],
+   "link": "https://pmvishwakarma.gov.in/",
+   "helpline": "18002677777"
+  },
+  {
+   "id": "NRLM",
+   "name": "DAY-NRLM SHG Bank Linkage",
+   "short": "DAY-NRLM",
+   "ministry": "Ministry of Rural Development",
+   "benefit": "Revolving fund of Rs 20 thousand to Rs 30 thousand per SHG, community investment support, and interest subvention on bank loans for women self help groups.",
+   "funding_min": 20000,
+   "funding_max": 1000000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "female",
+   "sectors": [
+    "Agriculture Allied",
+    "Food Processing",
+    "Handicraft",
+    "Trading",
+    "Services"
+   ],
+   "regions": [
+    "Rural"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "women",
+    "shg",
+    "self help group",
+    "rural",
+    "group loan",
+    "livelihood",
+    "revolving fund"
+   ],
+   "docs": [
+    "SHG registration and group resolution",
+    "Aadhaar of all members",
+    "SHG bank account passbook",
+    "Six month savings and internal lending record",
+    "Micro credit plan of the group"
+   ],
+   "steps": [
+    "Join or form a 10 to 20 member SHG through the village organisation.",
+    "Maintain regular savings and internal lending for at least six months.",
+    "Get graded by the cluster level federation.",
+    "Receive the revolving fund and community investment fund.",
+    "Apply for the SHG bank loan with interest subvention."
+   ],
+   "link": "https://aajeevika.gov.in/",
+   "helpline": "State Rural Livelihood Mission block office"
+  },
+  {
+   "id": "NHFDC",
+   "name": "NHFDC Divyangjan Swavalamban Scheme",
+   "short": "NHFDC Swavalamban",
+   "ministry": "Ministry of Social Justice and Empowerment",
+   "benefit": "Concessional loans up to Rs 50 lakh for self employment by persons with 40% or more disability, with interest from 4% to 8% depending on loan size.",
+   "funding_min": 50000,
+   "funding_max": 5000000,
+   "categories": [
+    "PwD"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Manufacturing",
+    "Services",
+    "Trading",
+    "Food Processing",
+    "Handicraft",
+    "Agriculture Allied"
+   ],
+   "regions": [
+    "Rural",
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 60,
+   "keywords": [
+    "disability",
+    "divyangjan",
+    "pwd",
+    "concessional",
+    "self employment",
+    "udid"
+   ],
+   "docs": [
+    "UDID card or disability certificate of 40% or more",
+    "Aadhaar and PAN",
+    "Project report",
+    "Income certificate",
+    "Bank account details",
+    "Qualification or experience proof for the activity"
+   ],
+   "steps": [
+    "Register on the NHFDC portal and select the self employment loan.",
+    "Application is routed to the State Channelising Agency or partner bank.",
+    "Agency verifies the disability certificate and the project viability.",
+    "Loan is sanctioned at the concessional rate applicable to the slab.",
+    "Skill training support can be claimed alongside the loan."
+   ],
+   "link": "https://nhfdc.nic.in/",
+   "helpline": "State Channelising Agency of NHFDC"
+  },
+  {
+   "id": "CGTMSE",
+   "name": "Credit Guarantee Fund Trust for Micro and Small Enterprises",
+   "short": "CGTMSE",
+   "ministry": "Ministry of MSME with SIDBI",
+   "benefit": "Guarantee cover on collateral free credit up to Rs 5 crore. Cover is 85% for micro loans up to Rs 5 lakh and higher slabs for women and units in the north east.",
+   "funding_min": 100000,
+   "funding_max": 50000000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Manufacturing",
+    "Services",
+    "Trading",
+    "Food Processing"
+   ],
+   "regions": [
+    "Rural",
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "guarantee",
+    "no collateral",
+    "msme",
+    "expansion",
+    "working capital",
+    "term loan",
+    "large"
+   ],
+   "docs": [
+    "Udyam registration certificate",
+    "Aadhaar and PAN of the promoter",
+    "Financial statements or projections",
+    "GST returns if registered",
+    "Bank sanction request for the credit facility"
+   ],
+   "steps": [
+    "Apply for a credit facility with a CGTMSE member lending institution.",
+    "Ask the branch to lodge the loan under CGTMSE cover rather than seek collateral.",
+    "Bank pays the guarantee fee and registers the account with the Trust.",
+    "Guarantee cover stays live while the loan is serviced and fees are paid."
+   ],
+   "link": "https://www.cgtmse.in/",
+   "helpline": "Your lending bank branch"
+  },
+  {
+   "id": "SISFS",
+   "name": "Startup India Seed Fund Scheme",
+   "short": "SISFS",
+   "ministry": "DPIIT, Ministry of Commerce and Industry",
+   "benefit": "Grant up to Rs 20 lakh for proof of concept and prototype, and up to Rs 50 lakh for market entry through convertible debentures or debt.",
+   "funding_min": 500000,
+   "funding_max": 5000000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Services",
+    "Manufacturing",
+    "Technology",
+    "Food Processing"
+   ],
+   "regions": [
+    "Rural",
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "startup",
+    "dpiit",
+    "seed",
+    "prototype",
+    "technology",
+    "innovation",
+    "grant",
+    "app"
+   ],
+   "docs": [
+    "DPIIT recognition certificate",
+    "Certificate of incorporation, not older than two years at application",
+    "Pitch deck and product roadmap",
+    "Team details and shareholding pattern",
+    "Bank account details of the entity"
+   ],
+   "steps": [
+    "Get DPIIT startup recognition on the Startup India portal.",
+    "Apply on the Seed Fund portal and select up to three incubators.",
+    "Incubator screens the application and calls you for a pitch.",
+    "Selection committee approves the amount and the milestones.",
+    "Funds are released in tranches against milestone completion."
+   ],
+   "link": "https://seedfund.startupindia.gov.in/",
+   "helpline": "Startup India hub, 1800 115 565"
+  },
+  {
+   "id": "MAHILACOIR",
+   "name": "Mahila Coir Yojana",
+   "short": "Mahila Coir Yojana",
+   "ministry": "Ministry of MSME, Coir Board",
+   "benefit": "Subsidy of 75% of the cost of a motorised ratt or other coir processing equipment for trained women artisans, with the rest as bank loan or own contribution.",
+   "funding_min": 20000,
+   "funding_max": 200000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "female",
+   "sectors": [
+    "Handicraft",
+    "Manufacturing",
+    "Agriculture Allied"
+   ],
+   "regions": [
+    "Rural"
+   ],
+   "age_min": 18,
+   "age_max": 60,
+   "keywords": [
+    "women",
+    "coir",
+    "rural",
+    "artisan",
+    "equipment",
+    "subsidy",
+    "handicraft",
+    "spinning"
+   ],
+   "docs": [
+    "Aadhaar and PAN",
+    "Coir Board training completion certificate",
+    "Quotation for the ratt or equipment",
+    "Bank account details",
+    "Rural residence proof"
+   ],
+   "steps": [
+    "Complete the Coir Board sponsored training for women artisans.",
+    "Apply through the regional Coir Board office with the equipment quotation.",
+    "Field officer verifies the training and the work shed.",
+    "Subsidy is released to the supplier or the bank against the purchase.",
+    "Start production and register on the Coir Board marketing support list."
+   ],
+   "link": "https://coirboard.gov.in/",
+   "helpline": "Regional office of the Coir Board"
+  },
+  {
+   "id": "SCSTHUB",
+   "name": "National SC-ST Hub Scheme",
+   "short": "National SC-ST Hub",
+   "ministry": "Ministry of MSME",
+   "benefit": "Reimbursement support for Udyam and GeM registration, certification, testing fees, participation in trade fairs, and capacity building for SC and ST owned micro and small enterprises.",
+   "funding_min": 10000,
+   "funding_max": 1500000,
+   "categories": [
+    "SC",
+    "ST"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Manufacturing",
+    "Services",
+    "Trading",
+    "Food Processing",
+    "Handicraft"
+   ],
+   "regions": [
+    "Rural",
+    "Urban"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "sc",
+    "st",
+    "gem",
+    "public procurement",
+    "certification",
+    "trade fair",
+    "reimbursement",
+    "msme"
+   ],
+   "docs": [
+    "Caste certificate for SC or ST",
+    "Udyam registration certificate",
+    "GeM seller ID if claiming procurement support",
+    "Invoices of the expenditure being reimbursed",
+    "Cancelled cheque of the enterprise account"
+   ],
+   "steps": [
+    "Register the enterprise on Udyam and then on the SC-ST Hub portal.",
+    "Pick the sub scheme, for example single point registration or trade fair support.",
+    "Upload the invoices and the caste certificate.",
+    "MSME-DFO office verifies and recommends the claim.",
+    "Reimbursement is credited to the enterprise bank account."
+   ],
+   "link": "https://scsthub.in/",
+   "helpline": "MSME Development and Facilitation Office of your region"
+  },
+  {
+   "id": "ASPIRE",
+   "name": "ASPIRE Livelihood Business Incubator",
+   "short": "ASPIRE",
+   "ministry": "Ministry of MSME",
+   "benefit": "Access to a subsidised livelihood business incubator for machinery, testing and mentoring in agro and rural enterprise, with incubation support for individual entrepreneurs.",
+   "funding_min": 25000,
+   "funding_max": 1000000,
+   "categories": [
+    "General",
+    "SC",
+    "ST",
+    "OBC",
+    "Minority",
+    "PwD"
+   ],
+   "gender": "any",
+   "sectors": [
+    "Agriculture Allied",
+    "Food Processing",
+    "Manufacturing",
+    "Handicraft"
+   ],
+   "regions": [
+    "Rural"
+   ],
+   "age_min": 18,
+   "age_max": 70,
+   "keywords": [
+    "incubator",
+    "agro",
+    "rural",
+    "mentoring",
+    "machinery",
+    "training",
+    "prototype"
+   ],
+   "docs": [
+    "Aadhaar and PAN",
+    "Business idea note or project outline",
+    "Rural residence proof",
+    "Bank account details",
+    "Udyam registration if the unit already exists"
+   ],
+   "steps": [
+    "Find the nearest ASPIRE livelihood business incubator on the MSME portal.",
+    "Apply to the incubator with your idea note.",
+    "Selection panel of the incubator approves the incubation slot.",
+    "Use shared machinery and mentoring during the incubation period.",
+    "Graduate with a bankable project report for a term loan."
+   ],
+   "link": "https://msme.gov.in/",
+   "helpline": "MSME Development and Facilitation Office of your region"
+  }
+ ]
+};
+const SCHEMES = DATA.schemes;
+const META = DATA.meta;
+
+const LANGUAGES = ["English","Hindi","Bengali","Marathi","Telugu","Tamil","Gujarati","Urdu","Kannada",
+  "Odia","Malayalam","Punjabi","Assamese","Maithili","Santali","Kashmiri","Nepali","Sindhi","Dogri",
+  "Konkani","Manipuri","Bodo"];
+
+/* =====================================================================
+   ENGINE  (port of server/engine.py - same weights, same maths)
+   ===================================================================== */
+const WEIGHTS = {category:40, funding:30, sector:15, region:15};
+const ALL_CATEGORIES = ["general","sc","st","obc","minority","pwd"];
+const r3 = n => Math.round(n*1000)/1000;
+const r1 = n => Math.round(n*10)/10;
+
+function tokenise(text){
+  return String(text).toLowerCase().split(/[^a-z0-9]+/).filter(t => t.length > 2);
+}
+
+/* TF-IDF cosine index. Same interface as the Python LiteVectorIndex, so the
+   swap to Chroma or pgvector happens in one place there and here. */
+class LiteVectorIndex{
+  constructor(){ this.docs = {}; this.idf = null; }
+  add(id, text){ this.docs[id] = this._tf(tokenise(text)); this.idf = null; }
+  _tf(tokens){ const c={}; tokens.forEach(t => c[t]=(c[t]||0)+1); return c; }
+  _buildIdf(){
+    const ids = Object.keys(this.docs), n = Math.max(ids.length,1), df = {};
+    ids.forEach(id => Object.keys(this.docs[id]).forEach(t => df[t]=(df[t]||0)+1));
+    this.idf = {};
+    Object.keys(df).forEach(t => { this.idf[t] = Math.log((1+n)/(1+df[t])) + 1; });
+  }
+  _embed(tf){
+    if(!this.idf) this._buildIdf();
+    const vec = {};
+    Object.keys(tf).forEach(t => { vec[t] = (1 + Math.log(tf[t])) * (this.idf[t] !== undefined ? this.idf[t] : 1); });
+    let norm = Math.sqrt(Object.values(vec).reduce((a,v)=>a+v*v,0)) || 1;
+    Object.keys(vec).forEach(t => vec[t] = vec[t]/norm);
+    return vec;
+  }
+  search(query, k){
+    const q = this._embed(this._tf(tokenise(query)));
+    if(!Object.keys(q).length) return [];
+    const hits = [];
+    Object.keys(this.docs).forEach(id => {
+      const d = this._embed(this.docs[id]);
+      let score = 0;
+      Object.keys(q).forEach(t => { if(d[t]) score += q[t]*d[t]; });
+      if(score > 0) hits.push({id, score:Math.round(score*10000)/10000});
+    });
+    hits.sort((a,b) => b.score - a.score);
+    return hits.slice(0, k || 20);
+  }
+}
+
+const INDEX = new LiteVectorIndex();
+SCHEMES.forEach(s => INDEX.add(s.id, [
+  s.name, s.short||"", s.ministry, s.benefit,
+  (s.keywords||[]).join(" "), (s.sectors||[]).join(" "),
+  (s.categories||[]).join(" "), (s.regions||[]).join(" ")
+].join(" ")));
+
+function blobOf(s){
+  return [s.name, s.short||"", s.ministry, s.benefit]
+    .concat(s.keywords||[], s.sectors||[], s.categories||[], s.regions||[])
+    .join(" ").toLowerCase();
+}
+
+function searchSchemes(query, limit){
+  limit = limit || 50;
+  if(!query || !query.trim()) return SCHEMES.slice(0, limit);
+  const q = query.toLowerCase().trim();
+  const ranked = {};
+  INDEX.search(q, limit).forEach(h => ranked[h.id] = h.score);
+  const out = [];
+  SCHEMES.forEach(s => {
+    const blob = blobOf(s);
+    const literal = q.split(/\s+/).some(w => w && blob.indexOf(w) !== -1);
+    if(literal || ranked[s.id] !== undefined){
+      const item = Object.assign({}, s);
+      item._relevance = Math.round((ranked[s.id] !== undefined ? ranked[s.id] : 0.15) * 1000)/10;
+      out.push(item);
+    }
+  });
+  out.sort((a,b) => b._relevance - a._relevance);
+  return out.slice(0, limit);
+}
+
+function categoryScore(p, s){
+  const cats = (s.categories||[]).map(c => c.toLowerCase());
+  const core = cats.filter(c => ALL_CATEGORIES.indexOf(c) !== -1);
+  const mine = String(p.category||"General").toLowerCase();
+  const targeted = core.length <= 2;
+  let score;
+  if(cats.indexOf(mine) !== -1) score = targeted ? 1.0 : 0.72;
+  else if(cats.indexOf("general") !== -1) score = 0.30;
+  else return 0.0;
+  if(String(s.gender||"any").toLowerCase() === "female" &&
+     String(p.gender||"").toLowerCase() === "female") score = Math.min(1.0, score + 0.28);
+  return r3(score);
+}
+
+function fundingScore(p, s){
+  const need = Number(p.funding_need)||0, lo = Number(s.funding_min), hi = Number(s.funding_max);
+  if(need <= 0) return 0.5;
+  const spread = Math.max(hi/Math.max(lo,1), 1);
+  const precision = Math.min(1.0, Math.max(0.55, 1.2 - 0.25*Math.log10(spread)));
+  let centre;
+  if(need >= lo && need <= hi) centre = 1.0;
+  else if(need < lo) centre = Math.max(0, 0.75*(need/lo));
+  else centre = Math.max(0, 0.60*(hi/need));
+  return r3(precision*centre);
+}
+
+function sectorScore(p, s){
+  const sectors = (s.sectors||[]).map(x => x.toLowerCase());
+  const mine = String(p.sector||"").toLowerCase();
+  if(!sectors.length) return 0.5;
+  if(sectors.indexOf(mine) === -1) return 0.15;
+  if(sectors.length <= 2) return 1.0;
+  if(sectors.length <= 3) return 0.85;
+  return 0.70;
+}
+
+function regionScore(p, s){
+  const regions = (s.regions||[]).map(x => x.toLowerCase());
+  const mine = String(p.region||"").toLowerCase();
+  if(!regions.length) return 0.5;
+  if(regions.indexOf(mine) === -1) return 0.0;
+  return regions.length === 1 ? 1.0 : 0.8;
+}
+
+function blockersFor(p, s){
+  const out = [];
+  if(String(s.gender||"any").toLowerCase() === "female" &&
+     ["female","other",""].indexOf(String(p.gender||"").toLowerCase()) === -1)
+    out.push("Reserved for women applicants");
+  const cats = (s.categories||[]).map(c => c.toLowerCase());
+  if(cats.indexOf(String(p.category||"").toLowerCase()) === -1 && cats.indexOf("general") === -1)
+    out.push("Restricted to " + (s.categories||[]).join(", "));
+  const age = Number(p.age)||0;
+  if(age && age < Number(s.age_min||0)) out.push("Minimum age " + s.age_min);
+  if(age && s.age_max && age > Number(s.age_max)) out.push("Maximum age " + s.age_max);
+  if(regionScore(p, s) === 0.0) out.push("Applies to " + (s.regions||[]).join(", ") + " areas only");
+  return out;
+}
+
+function scoreScheme(p, s){
+  const parts = {category:categoryScore(p,s), funding:fundingScore(p,s),
+                 sector:sectorScore(p,s), region:regionScore(p,s)};
+  const breakdown = {};
+  Object.keys(WEIGHTS).forEach(k => breakdown[k] = r1(parts[k]*WEIGHTS[k]));
+  let total = r1(Object.values(breakdown).reduce((a,v)=>a+v,0));
+  const blockers = blockersFor(p, s);
+  if(blockers.length) total = r1(Math.min(total, 45));
+  const eligible = Math.round(total);
+  const item = Object.assign({}, s);
+  item.match = {
+    eligible_pct: eligible, breakdown: breakdown, weights: WEIGHTS, blockers: blockers,
+    verdict: (eligible >= 80 && !blockers.length) ? "Strong match"
+           : (eligible >= 60 && !blockers.length) ? "Worth applying" : "Check eligibility"
+  };
+  return item;
+}
+
+function matchSchemes(profile, query, limit){
+  const pool = searchSchemes(query, 100).map(s => scoreScheme(profile, s));
+  pool.sort((a,b) => (b.match.eligible_pct - a.match.eligible_pct) ||
+                     ((b._relevance||0) - (a._relevance||0)));
+  return pool.slice(0, limit || 12);
+}
+
+/* Exported for the build-time parity test against the Python engine. */
+if(typeof module !== "undefined") module.exports = {matchSchemes, scoreScheme, searchSchemes};
+
+/* =====================================================================
+   LANGUAGE
+   ===================================================================== */
+const T = {
+  "English":{welcome:"Welcome to SchemeSetu - SASVA",
+    tagline:"Find the government scheme that actually fits you, in one minute.",
+    langs:"22 Languages Supported", find:"Find your scheme",
+    search_ph:"Type: women / rural / food / trading...", enter:"⏎ ENTER",
+    results:"Matched schemes", no_results:"Nothing matched that. Try women, rural, food, artisan or trading.",
+    eligible:"Eligible", breakdown:"AI MATCH BREAKDOWN",
+    guide:"Step-by-step application guide and document list", steps:"How to apply",
+    docs:"Documents you need to keep ready", save:"💾 Save", saved:"✅ Saved", pdf:"📄 Real PDF",
+    wa:"📲 WhatsApp", voice:"🔊 Voice", track:"📈 Track Success", tracking:"X. Success Tracking",
+    feedback:"💬 X. Feedback and self learning loop", notify:"Notification preference"},
+  "हिन्दी":{welcome:"स्कीमसेतु - सास्वा में आपका स्वागत है",
+    tagline:"एक मिनट में वह सरकारी योजना खोजें जो आप पर लागू होती है।",
+    langs:"22 भाषाओं में उपलब्ध", find:"अपनी योजना खोजें",
+    search_ph:"लिखें: महिला / ग्रामीण / खाद्य / व्यापार...", enter:"⏎ खोजें",
+    results:"आपके लिए योजनाएँ", no_results:"कुछ नहीं मिला। महिला, ग्रामीण, खाद्य या व्यापार लिखकर देखें।",
+    eligible:"पात्रता", breakdown:"एआई मैच विश्लेषण",
+    guide:"आवेदन की चरणबद्ध जानकारी और दस्तावेज़", steps:"आवेदन कैसे करें",
+    docs:"आवश्यक दस्तावेज़", save:"💾 सेव", saved:"✅ सेव हुआ", pdf:"📄 पीडीएफ",
+    wa:"📲 व्हाट्सएप", voice:"🔊 आवाज़", track:"📈 प्रगति", tracking:"X. सफलता ट्रैकिंग",
+    feedback:"💬 X. प्रतिक्रिया और सेल्फ लर्निंग लूप", notify:"सूचना का माध्यम"},
+  "বাংলা":{welcome:"স্কিমসেতু - সাসভা তে স্বাগতম",
+    tagline:"এক মিনিটে আপনার জন্য উপযুক্ত সরকারি প্রকল্প খুঁজুন।",
+    langs:"২২টি ভাষা সমর্থিত", find:"আপনার প্রকল্প খুঁজুন",
+    search_ph:"লিখুন: মহিলা / গ্রামীণ / খাদ্য / ব্যবসা...", enter:"⏎ খুঁজুন",
+    results:"আপনার জন্য প্রকল্প", no_results:"কিছু মেলেনি। মহিলা, গ্রামীণ, খাদ্য বা ব্যবসা লিখে দেখুন।",
+    eligible:"যোগ্যতা", breakdown:"এআই ম্যাচ বিশ্লেষণ",
+    guide:"আবেদনের ধাপ ও নথির তালিকা", steps:"কীভাবে আবেদন করবেন",
+    docs:"প্রয়োজনীয় নথি", save:"💾 সেভ", saved:"✅ সেভ হয়েছে", pdf:"📄 পিডিএফ",
+    wa:"📲 হোয়াটসঅ্যাপ", voice:"🔊 কণ্ঠ", track:"📈 ট্র্যাক", tracking:"X. সফলতা ট্র্যাকিং",
+    feedback:"💬 X. মতামত ও সেলফ লার্নিং লুপ", notify:"বিজ্ঞপ্তির মাধ্যম"}
+};
+const VOICE_LANG = {"English":"en-IN","हिन्दी":"hi-IN","বাংলা":"bn-IN"};
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const S = {
+  lang:"English", page:"Home", role:"User", name:"", loggedIn:false, query:"",
+  saved:[], tracking:{}, feedback:[], notify:"None",
+  lastSynced:new Date(new Date().setHours(0,0,0,0)),
+  profile:{category:"General", gender:"Female", age:32, sector:"Food Processing",
+           funding_need:300000, region:"Rural", state:"West Bengal"}
+};
+const t = k => (T[S.lang] && T[S.lang][k]) || T["English"][k];
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const inr = n => "Rs " + Number(n).toLocaleString("en-IN");
+const fmtDate = d => d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) +
+  ", " + d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});
+
+let toastTimer = null;
+function toast(msg){
+  const el = $("toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+function renderSync(){
+  const nextMidnight = new Date(new Date().setHours(24,0,0,0));
+  $("syncStrip").innerHTML =
+    '<span class="sync-dot"></span>Last synced from <b>myscheme.gov.in</b> on <b>' + fmtDate(S.lastSynced) +
+    '</b> &nbsp;|&nbsp; Next sync: <b>Tonight 12 AM</b> (' +
+    nextMidnight.toLocaleDateString("en-IN",{day:"2-digit",month:"short"}) +
+    ') &nbsp;|&nbsp; ' + META.schemes_live + ' schemes live, ' + META.schemes_in_pipeline + ' in the crawl pipeline';
+  $("resyncWrap").classList.toggle("hidden", S.role !== "Admin");
+}
+
+function cardHTML(s){
+  const m = s.match, pct = m.eligible_pct;
+  const tone = pct >= 75 ? "badge-green" : pct >= 55 ? "badge-amber" : "badge-grey";
+  const cls = (pct >= 55 && !m.blockers.length) ? "scheme-card" : "scheme-card warn";
+  const rows = Object.keys(m.breakdown).map(k => {
+    const v = m.breakdown[k], w = m.weights[k];
+    const label = k.charAt(0).toUpperCase() + k.slice(1);
+    return '<div class="bd-row"><div class="bd-label">' + label + ' (' + w + '%)</div>' +
+      '<div class="bd-track"><div class="bd-fill" style="width:' + ((v/w)*100).toFixed(0) + '%"></div></div>' +
+      '<div class="bd-val">' + v.toFixed(1) + ' / ' + w + '</div></div>';
+  }).join("");
+  const blockers = m.blockers.length ? '<div class="blocker">⚠️ ' + esc(m.blockers.join(" · ")) + '</div>' : "";
+  const isSaved = S.saved.indexOf(s.id) !== -1;
+
+  return '<div class="card-wrap">' +
+    '<div class="' + cls + '">' +
+      '<h3>' + esc(s.name) + '</h3>' +
+      '<div class="sub">' + esc(s.short||"") + ' &nbsp;·&nbsp; ' + inr(s.funding_min) + ' to ' + inr(s.funding_max) + '</div>' +
+      '<div><span class="badge ' + tone + '">' + pct + '% ' + t("eligible") + '</span>' +
+      '<span class="badge badge-blue">🏛️ ' + esc(s.ministry) + '</span>' +
+      '<span class="badge badge-grey">' + m.verdict + '</span></div>' +
+      '<div class="benefit">' + esc(s.benefit) + '</div>' +
+      '<div class="bd-wrap"><div class="bd-title">' + t("breakdown") + '</div>' + rows + '</div>' +
+      blockers +
+    '</div>' +
+    '<div class="actions">' +
+      '<button data-act="save" data-id="' + s.id + '" class="' + (isSaved?"done":"") + '">' +
+        (isSaved ? t("saved") : t("save")) + '</button>' +
+      '<button data-act="pdf"   data-id="' + s.id + '">' + t("pdf") + '</button>' +
+      '<a href="' + waLink(s) + '" target="_blank" rel="noopener">' + t("wa") + '</a>' +
+      '<button data-act="voice" data-id="' + s.id + '">' + t("voice") + '</button>' +
+      '<button data-act="track" data-id="' + s.id + '" class="' + (S.tracking[s.id]?"done":"") + '">' +
+        t("track") + '</button>' +
+    '</div>' +
+    '<details><summary>📋 ' + t("guide") + ' · ' + esc(s.short||s.id) + '</summary>' +
+      '<div class="guide"><div><h4>' + t("steps") + '</h4><ol>' +
+        (s.steps||[]).map(x => '<li>' + esc(x) + '</li>').join("") +
+      '</ol><p><a href="' + esc(s.link) + '" target="_blank" rel="noopener">Open the official portal ↗</a></p></div>' +
+      '<div><h4>' + t("docs") + '</h4><ul>' +
+        (s.docs||[]).map(x => '<li>' + esc(x) + '</li>').join("") +
+      '</ul><p class="tiny">Helpline: ' + esc(s.helpline||"") + '</p></div></div>' +
+    '</details></div>';
+}
+
+function waLink(s){
+  const m = s.match ? s.match.eligible_pct : "";
+  const msg = "*" + s.name + "*\n" + "Ministry: " + s.ministry + "\n" +
+    "Eligibility match: " + m + "%\n" + "Benefit: " + s.benefit + "\n" +
+    "Apply: " + s.link + "\n\nShared via SASVA SchemeSetu";
+  return "https://wa.me/?text=" + encodeURIComponent(msg);
+}
+
+let CURRENT = [];
+function renderResults(){
+  CURRENT = matchSchemes(S.profile, S.query, 12);
+  let title = t("results") + " · " + CURRENT.length;
+  if(S.query) title += ' · "' + esc(S.query) + '"';
+  $("resultsTitle").textContent = title;
+  $("results").innerHTML = CURRENT.length
+    ? CURRENT.map(cardHTML).join("")
+    : '<div class="note info">' + t("no_results") + '</div>';
+
+  const sel = $("fbScheme");
+  sel.innerHTML = '<option>General feedback</option>' +
+    CURRENT.map(s => '<option>' + s.id + '</option>').join("");
+}
+
+function renderSaved(){
+  $("savedBlock").classList.toggle("hidden", !S.saved.length);
+  $("savedBody").innerHTML = S.saved.map(id => {
+    const s = SCHEMES.find(x => x.id === id);
+    return '<tr><td>' + esc(s.name) + '</td><td>' + esc(s.ministry) + '</td><td>' +
+      inr(s.funding_min) + ' - ' + inr(s.funding_max) + '</td></tr>';
+  }).join("");
+  $("sideStats").textContent = "💾 Saved: " + S.saved.length + " · 📈 Tracked: " + Object.keys(S.tracking).length;
+}
+
+function renderTracking(){
+  const ids = Object.keys(S.tracking);
+  $("tTrack").textContent = t("tracking");
+  if(!ids.length){
+    $("trackBlock").innerHTML = '<div class="note info">Nothing tracked yet. Press Track Success on any scheme card above.</div>';
+    return;
+  }
+  $("trackBlock").innerHTML = ids.map(id => {
+    const tr = S.tracking[id];
+    return '<div class="track-row"><div class="track-head"><b>' + esc(tr.name) + '</b>' +
+      '<span class="track-stage">' + esc(tr.stage) + '</span>' +
+      '<span class="pct">' + tr.pct + '%</span></div>' +
+      '<div class="bar"><span style="width:' + tr.pct + '%"></span></div>' +
+      '<div class="track-stage">Started ' + tr.started + ' · application id SASVA-' + id + '-' +
+      tr.started.replace(/\s/g,"") + '</div></div>';
+  }).join("") +
+  '<div style="max-width:190px;margin-top:6px"><button class="btn" id="resetTrack">Reset tracking</button></div>';
+  $("resetTrack").onclick = () => { S.tracking = {}; renderTracking(); renderSaved(); renderResults(); };
+}
+
+function renderDash(){
+  const show = S.role === "Admin" || S.role === "CSC Operator";
+  $("dashBlock").classList.toggle("hidden", !show);
+  if(!show) return;
+  $("dashTitle").textContent = "🛠️ " + S.role + " dashboard";
+  const ministries = {};
+  SCHEMES.forEach(s => ministries[s.ministry] = (ministries[s.ministry]||0)+1);
+  const cards = [
+    ["Schemes live", META.schemes_live],
+    ["Crawl pipeline", META.schemes_in_pipeline],
+    ["Feedback this session", S.feedback.length],
+    ["Applications tracked", Object.keys(S.tracking).length]
+  ];
+  $("dashMetrics").innerHTML = cards.map(c =>
+    '<div class="metric"><span>' + c[0] + '</span><b>' + c[1] + '</b></div>').join("");
+  $("dashBody").innerHTML = SCHEMES.map(s =>
+    '<tr><td>' + s.id + '</td><td>' + esc(s.name) + '</td><td>' + esc(s.ministry) + '</td>' +
+    '<td class="num">' + Number(s.funding_min).toLocaleString("en-IN") + '</td>' +
+    '<td class="num">' + Number(s.funding_max).toLocaleString("en-IN") + '</td>' +
+    '<td>' + s.categories.join(", ") + '</td><td>' + s.sectors.join(", ") + '</td>' +
+    '<td>' + s.regions.join(", ") + '</td></tr>').join("");
+  $("fbTableWrap").classList.toggle("hidden", !(S.role === "Admin" && S.feedback.length));
+  $("fbBody").innerHTML = S.feedback.map(f =>
+    '<tr><td>' + esc(f.scheme) + '</td><td>' + (f.helpful ? "Yes" : "No") + '</td><td>' + esc(f.comment) + '</td></tr>').join("");
+}
+
+function renderLang(){
+  $("wTitle").textContent = t("welcome");
+  $("wTag").textContent = t("tagline");
+  $("wPill").textContent = "🌐 " + t("langs");
+  $("tFind").textContent = t("find");
+  $("q").placeholder = t("search_ph");
+  $("enterBtn").textContent = t("enter");
+  $("tNotify").textContent = t("notify");
+  $("tFeedback").textContent = t("feedback");
+  Array.prototype.forEach.call($("langBtns").children,
+    b => b.classList.toggle("on", b.dataset.l === S.lang));
+  renderResults(); renderTracking();
+}
+
+function renderAll(){ renderSync(); renderResults(); renderSaved(); renderTracking(); renderDash(); }
+
+/* =====================================================================
+   PDF SHEET  (browser print. The deployed app builds it with fpdf2)
+   ===================================================================== */
+function openSheet(id){
+  const s = CURRENT.find(x => x.id === id) || SCHEMES.find(x => x.id === id);
+  const pct = s.match ? s.match.eligible_pct : "";
+  $("sheet").innerHTML =
+    '<div class="sheet-top"><h2>SASVA | SchemeSetu</h2>' +
+      '<p>AI driven scheme matching for marginalised entrepreneurs</p></div>' +
+    '<div class="sheet-body">' +
+      '<h3 style="margin:0 0 4px;font-size:19px">' + esc(s.name) + '</h3>' +
+      '<p class="meta" style="margin:0">' + esc(s.ministry) + ' &nbsp;|&nbsp; Scheme code ' + s.id + '</p>' +
+      '<p class="meta">Prepared for: <b>' + esc(S.name || "Applicant") + '</b> &nbsp; · &nbsp; ' +
+        'Eligibility match: <b>' + pct + '%</b> &nbsp; · &nbsp; Generated ' + fmtDate(new Date()) + '</p>' +
+      '<h4>Benefit</h4><ul><li>' + esc(s.benefit) + '</li></ul>' +
+      '<h4>Eligibility snapshot</h4><ul>' +
+        '<li>Categories: ' + s.categories.join(", ") + '</li>' +
+        '<li>Sectors: ' + s.sectors.join(", ") + '</li>' +
+        '<li>Area: ' + s.regions.join(", ") + '</li>' +
+        '<li>Age: ' + s.age_min + ' to ' + s.age_max + ' years</li>' +
+        '<li>Funding band: ' + inr(s.funding_min) + ' to ' + inr(s.funding_max) + '</li></ul>' +
+      '<h4>Documents required</h4><ul>' + s.docs.map(d => '<li>' + esc(d) + '</li>').join("") + '</ul>' +
+      '<h4>Application steps</h4><ol>' + s.steps.map(x => '<li>' + esc(x) + '</li>').join("") + '</ol>' +
+      '<h4>Where to apply</h4><ul><li>' + esc(s.link) + '</li><li>Helpline: ' + esc(s.helpline||"") + '</li></ul>' +
+      '<p class="disclaim">Figures are taken from the public scheme page at the time of data collection and must be ' +
+        'verified on the ministry portal before applying. Generated by SASVA, Team NEXUS, SIH 2026, SIH26092.</p>' +
+    '</div>' +
+    '<div class="sheet-actions">' +
+      '<button class="btn" id="sheetClose">Close</button>' +
+      '<button class="btn primary" id="sheetPrint">Print / Save as PDF</button>' +
+    '</div>';
+  $("modal").classList.add("show");
+  $("sheetClose").onclick = () => $("modal").classList.remove("show");
+  $("sheetPrint").onclick = () => { try{ window.print(); }catch(e){ toast("Use your browser print menu to save as PDF"); } };
+}
+
+/* =====================================================================
+   EVENTS
+   ===================================================================== */
+$("navHome").onclick = () => setPage("Home");
+$("navAbout").onclick = () => setPage("About");
+function setPage(p){
+  S.page = p;
+  $("homeView").classList.toggle("hidden", p !== "Home");
+  $("aboutView").classList.toggle("hidden", p !== "About");
+  $("navHome").setAttribute("aria-current", p === "Home" ? "page" : "false");
+  $("navAbout").setAttribute("aria-current", p === "About" ? "page" : "false");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+$("langBtns").onclick = e => {
+  const b = e.target.closest("button"); if(!b) return;
+  S.lang = b.dataset.l; renderLang();
+};
+
+$("loginBtn").onclick = () => {
+  S.role = $("role").value;
+  S.name = $("uname").value.trim();
+  S.loggedIn = !!S.name;
+  $("loginState").className = "note " + (S.loggedIn ? "ok" : "info");
+  $("loginState").textContent = S.loggedIn
+    ? S.name + " · " + S.role
+    : "Browsing as guest. Add a name to save schemes.";
+  renderAll();
+  toast(S.loggedIn ? "Signed in as " + S.role : "Add a name to sign in");
+};
+
+$("resyncBtn").onclick = () => {
+  S.lastSynced = new Date();
+  renderSync();
+  $("resyncMsg").innerHTML = '<div class="note ok">Re-sync complete. Feed timestamp is now ' +
+    fmtDate(S.lastSynced) + '.</div>';
+};
+
+function readProfile(){
+  S.profile.category = $("pcat").value;
+  S.profile.age = Number($("page").value) || 0;
+  S.profile.sector = $("psector").value;
+  S.profile.funding_need = Number($("pfund").value) || 0;
+  S.profile.state = $("pstate").value;
+  renderResults();
+}
+["pcat","page","psector","pfund"].forEach(id => { $(id).onchange = readProfile; });
+$("pstate").onchange = readProfile;
+
+function segHandler(el, key){
+  $(el).onclick = e => {
+    const b = e.target.closest("button"); if(!b) return;
+    Array.prototype.forEach.call($(el).children, x => x.classList.remove("on"));
+    b.classList.add("on");
+    if(key === "helpful") return;
+    S.profile[key] = b.dataset.v;
+    renderResults();
+  };
+}
+segHandler("pgender","gender");
+segHandler("pregion","region");
+segHandler("fbHelpful","helpful");
+
+function runSearch(){ S.query = $("q").value.trim(); renderResults(); }
+$("enterBtn").onclick = runSearch;
+$("q").addEventListener("keydown", e => { if(e.key === "Enter") runSearch(); });
+$("chips").onclick = e => {
+  const b = e.target.closest("button"); if(!b) return;
+  Array.prototype.forEach.call($("chips").children, x => x.classList.remove("on"));
+  if(b.dataset.c) b.classList.add("on");
+  $("q").value = b.dataset.c;
+  runSearch();
+};
+
+$("results").onclick = e => {
+  const b = e.target.closest("button[data-act]"); if(!b) return;
+  const id = b.dataset.id, act = b.dataset.act;
+  const s = CURRENT.find(x => x.id === id);
+  if(act === "save"){
+    if(S.saved.indexOf(id) === -1) S.saved.push(id);
+    toast("Saved " + (s.short || id)); renderSaved(); renderResults();
+  }
+  if(act === "pdf") openSheet(id);
+  if(act === "track"){
+    S.tracking[id] = {name:s.short || id, pct:65,
+      stage:"Documents verified, awaiting bank appraisal",
+      started:new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})};
+    toast("Tracking " + (s.short || id)); renderTracking(); renderSaved(); renderResults();
+  }
+  if(act === "voice") speak(s);
+};
+
+function speak(s){
+  if(!("speechSynthesis" in window)){ toast("Voice not supported in this browser"); return; }
+  const pct = s.match.eligible_pct;
+  let script;
+  if(S.lang === "हिन्दी") script = s.short + " योजना. मंत्रालय " + s.ministry + ". आपकी पात्रता " + pct + " प्रतिशत है. लाभ: " + s.benefit;
+  else if(S.lang === "বাংলা") script = s.short + " প্রকল্প. মন্ত্রক " + s.ministry + ". আপনার যোগ্যতা " + pct + " শতাংশ. সুবিধা: " + s.benefit;
+  else script = s.name + ", run by the " + s.ministry + ". Your eligibility match is " + pct + " percent. Benefit: " + s.benefit;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(script);
+    u.lang = VOICE_LANG[S.lang] || "en-IN"; u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+    toast("Reading out " + (s.short || s.id));
+  }catch(e){ toast("Voice unavailable here. The deployed app uses gTTS audio."); }
+}
+
+$("notify").onchange = () => {
+  S.notify = $("notify").value;
+  const msg = $("notifyMsg");
+  if(S.notify === "None"){
+    msg.className = "note info";
+    msg.textContent = "No alerts. New matching schemes will only appear inside the app.";
+  }else{
+    msg.className = "note ok";
+    msg.textContent = S.notify + " alerts on. You get a message when the nightly sync finds a new scheme that matches your profile.";
+  }
+};
+
+$("fbSubmit").onclick = () => {
+  const text = $("fbText").value.trim();
+  if(!text){ toast("Add a line of feedback first"); return; }
+  const helpful = $("fbHelpful").querySelector("button.on").dataset.v === "Yes";
+  const scheme = $("fbScheme").value;
+  S.feedback.push({scheme:scheme, helpful:helpful, comment:text});
+  const tokens = tokenise(text).length;
+  $("fbMsg").innerHTML = '<div class="note ok"><b>Self-learning loop updated!</b><br>' + tokens +
+    ' keyword signals queued for the nightly retrain · ' + S.feedback.length +
+    ' responses in this session</div>';
+  $("fbText").value = "";
+  renderDash();
+};
+
+$("clearSaved").onclick = () => { S.saved = []; renderSaved(); renderResults(); };
+$("modal").onclick = e => { if(e.target === $("modal")) $("modal").classList.remove("show"); };
+document.addEventListener("keydown", e => { if(e.key === "Escape") $("modal").classList.remove("show"); });
+
+/* boot */
+$("langList").textContent = LANGUAGES.join(" · ");
+renderLang();
+renderAll();
+</script>
+</body>
+</html>
