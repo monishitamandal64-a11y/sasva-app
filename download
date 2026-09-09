@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.git/
+.gitignore
+.idea/
+.vscode/
+.DS_Store
+*.log
+data/feedback.json
+.pytest_cache/
+docs/screenshots/
+superseded/

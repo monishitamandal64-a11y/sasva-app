@@ -1,0 +1,11 @@
+# Render Blueprint: one Docker web service running client + server.
+services:
+  - type: web
+    name: sasva
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: API_PORT
+        value: "8000"
