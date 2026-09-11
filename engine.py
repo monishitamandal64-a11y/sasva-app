@@ -59,7 +59,7 @@ def update_profile_from_text(text: str, profile: Dict[str, Any]) -> Dict[str, An
     if "farmer" in t:
         profile["occupation"] = "Farmer"
     if  "SC" in t:
-        profile["occupation"] = "SC"
+        profile["category"] = "SC"
 _CACHE: Dict[str, Any] = {}
 
 
