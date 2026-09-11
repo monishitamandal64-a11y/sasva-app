@@ -710,6 +710,21 @@ for s in results:
         if m["blockers"] else ""
     )
 
+    # Module 3 (Personal Rank Recommendation): tier badge + 2-line explainer.
+    # Reuses existing badge/sub classes only, no new CSS added.
+    tier = m.get("tier", "")
+    tier_tone = {
+        "Highly Recommended": "badge-green",
+        "Also Eligible": "badge-blue",
+        "Not Eligible": "badge-grey",
+    }.get(tier, "badge-grey")
+    tier_badge = f'<span class="badge {tier_tone}">⭐ {tier}</span>' if tier else ""
+    why_lines = m.get("why", [])
+    why_html = (
+        '<div class="sub" style="margin-top:6px;">' + "<br>".join(why_lines) + "</div>"
+        if why_lines else ""
+    )
+
     H(
         f"""
         <div class="{card_class}">
@@ -719,8 +734,10 @@ for s in results:
         <span class="badge {tone}">{pct}% {t('eligible')}</span>
         <span class="badge badge-blue">🏛️ {s['ministry']}</span>
         <span class="badge badge-grey">{m['verdict']}</span>
+        {tier_badge}
         </div>
         <div class="benefit">{s['benefit']}</div>
+        {why_html}
         <div class="bd-wrap">
         <div class="bd-title">{t('breakdown')}</div>
         {rows}
