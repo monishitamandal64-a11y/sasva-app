@@ -35,6 +35,31 @@ LANGUAGES = [
 # Data access
 # ---------------------------------------------------------------------------
 
+def get_next_question(user_profile: Dict[str, Any]) -> Optional[str]:
+    """Returns the next question if any profile field is missing."""
+    for field in REQUIRED_FIELDS:
+        if field not in user_profile or not user_profile[field]:
+            if field == "category":
+                return "Which category do you belong to? SC/ST/OBC/General"
+            if field == "gender":
+                return "What is your gender?"
+            if field == "state":
+                return "Which state are you from?"
+            if field == "occupation":
+                return "What is your occupation? Farmer / Student / Business?"
+    return None
+
+def update_profile_from_text(text: str, profile: Dict[str, Any]) -> Dict[str, Any]:
+    """Extracts profile info from free text."""
+    t = text.lower()
+    if "west bengal" in t:
+        profile["state"] = "West Bengal"
+    if "woman" in t or "female" in t:
+        profile["gender"] = "Female"
+    if "farmer" in t:
+        profile["occupation"] = "Farmer"
+    if  "SC" in t:
+        profile["occupation"] = "SC"
 _CACHE: Dict[str, Any] = {}
 
 
