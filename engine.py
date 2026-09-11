@@ -18,9 +18,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-DATA_FILE = Path(__file__).resolve().parents[1] / "data" / "schemes.json"
-FEEDBACK_FILE = Path(__file__).resolve().parents[1] / "data" / "feedback.json"
-
+DATA_FILE = Path(__file__).parent / "schemes.json"
+FEEDBACK_FILE = Path(__file__).parent / "feedback.json"
 WEIGHTS = {"category": 40, "funding": 30, "sector": 15, "region": 15}
 
 IST = timezone(timedelta(hours=5, minutes=30))
