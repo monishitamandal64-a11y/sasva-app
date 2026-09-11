@@ -28,9 +28,8 @@ import streamlit as st
 # Make the shared engine importable whether we run from the repo root or /client
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
- import engine  # noqa: E402  (path set above)
+   sys.path.insert(0, str(ROOT))
+import engine  # noqa: E402  (path set above)
 
 API_BASE = os.getenv("SASVA_API_URL", "http://localhost:8000").rstrip("/")
 
